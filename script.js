@@ -1128,11 +1128,19 @@ function limpiarRuta(r) {
 
 function aplicarPortada() {
     if (!menuConfig?.portada) return;
-    const { banner, logo } = menuConfig.portada;
+    const { banner, logo, fondo } = menuConfig.portada;
+
     if (banner) document.getElementById("portada").style.backgroundImage = `url('${limpiarRuta(banner)}')`;
     if (logo) document.getElementById("portada-logo").src = limpiarRuta(logo);
-}
 
+    // 🎨 Aplica la imagen o color de fondo general
+    if (fondo) {
+        document.body.style.backgroundImage = `url('${limpiarRuta(fondo)}')`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+        document.body.style.backgroundAttachment = "fixed"; // Mantiene el fondo fijo al hacer scroll
+    }
+}
 function encontrarProductoPorCodigo(codigo) {
     for (let cat in menuData) {
         let p = menuData[cat].find(x => String(x.codigo).trim() === String(codigo).trim());
