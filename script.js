@@ -907,6 +907,7 @@ function renderMenu() {
                             </div>
                             <div class="info">
                                 <span class="nombre">${p.articulo}</span>
+                                ${p.descripcion ? `<p class="descripcion">${p.descripcion}</p>` : ''}
                                 <span class="precio">$${Number(p.precio).toLocaleString()}</span>
                             </div>
                         </div>
@@ -933,7 +934,7 @@ function renderMenu() {
             const divChef = document.createElement("div");
             divChef.className = "bloque-categoria seccion-chef";
             divChef.id = "cat-recomendados";
-            divChef.style.display = "block"; // ✅ YA NO SE OCULTA
+            divChef.style.display = "block";
 
             divChef.innerHTML = htmlChef + `</div>`;
             menuCont.appendChild(divChef);
@@ -967,7 +968,6 @@ function renderMenu() {
         divCat.className = "bloque-categoria";
         divCat.id = "cat-" + normalizar(cat).replace(/\s+/g, "");
 
-        // 🔥 SOLO LA INICIAL visible (tu comportamiento original)
         divCat.style.display = esInicial ? "block" : "none";
 
         let html = "";
@@ -979,48 +979,44 @@ function renderMenu() {
 
         html += `<h3 class="titulo-categoria">${cat}</h3><div class="grid-productos">`;
 
-    menuData[cat].forEach(p => {
-    const cod = String(p.codigo).trim();
-    const img = imagenes[cod] || p.imagen;
-    const diasConfigurados = menuConfig?.recomendados?.[cod];
+        menuData[cat].forEach(p => {
+            const cod = String(p.codigo).trim();
+            const img = imagenes[cod] || p.imagen;
+            const diasConfigurados = menuConfig?.recomendados?.[cod];
 
-// Si la promo existe pero no tiene días activos,
-// ocultamos completamente el producto
-    if (
-        diasConfigurados &&
-        Array.isArray(diasConfigurados) &&
-        diasConfigurados.length === 0
-    ) {
-        return;
-    }
-    const esRecomendadoGeneral = diasConfigurados && diasConfigurados.length > 0;
-    const esRecHoy = diasConfigurados?.some(d => normalizar(d) === hoy);
+            if (
+                diasConfigurados &&
+                Array.isArray(diasConfigurados) &&
+                diasConfigurados.length === 0
+            ) {
+                return;
+            }
+            const esRecomendadoGeneral = diasConfigurados && diasConfigurados.length > 0;
+            const esRecHoy = diasConfigurados?.some(d => normalizar(d) === hoy);
 
-    // Definimos si el producto debe estar deshabilitado:
-    // Es decir: está en la lista de recomendados pero NO es su día hoy.
-    const estaDeshabilitado = esRecomendadoGeneral && !esRecHoy;
+            const estaDeshabilitado = esRecomendadoGeneral && !esRecHoy;
 
-    html += `
-        <div class="card-producto ${estaDeshabilitado ? 'producto-deshabilitado' : ''}" 
-             ${estaDeshabilitado ? '' : `onclick='abrirModalProducto(${JSON.stringify(p)})'`}>
-            <div class="contenedor-media">
-                ${esRecHoy ? '<span class="badge-estrella">⭐ Recomendado</span>' : ''}
-                ${estaDeshabilitado ? '<div class="overlay-deshabilitado">No disponible hoy</div>' : ''}
-                ${img ? `<img src="${limpiarRuta(img)}" style="${estaDeshabilitado ? 'filter: grayscale(1); opacity: 0.5;' : ''}">` : '<div class="sin-foto"></div>'}
-            </div>
-            <div class="info">
-                <span class="nombre">${p.articulo} ${estaDeshabilitado ? '<small>(Promo otro día)</small>' : ''}</span>
-                <span class="precio" style="${estaDeshabilitado ? 'text-decoration: line-through; color: gray;' : ''}">$${Number(p.precio).toLocaleString()}</span>
-            </div>
-        </div>
-    `;
-});
+            html += `
+                <div class="card-producto ${estaDeshabilitado ? 'producto-deshabilitado' : ''}" 
+                     ${estaDeshabilitado ? '' : `onclick='abrirModalProducto(${JSON.stringify(p)})'`}>
+                    <div class="contenedor-media">
+                        ${esRecHoy ? '<span class="badge-estrella">⭐ Recomendado</span>' : ''}
+                        ${estaDeshabilitado ? '<div class="overlay-deshabilitado">No disponible hoy</div>' : ''}
+                        ${img ? `<img src="${limpiarRuta(img)}" style="${estaDeshabilitado ? 'filter: grayscale(1); opacity: 0.5;' : ''}">` : '<div class="sin-foto"></div>'}
+                    </div>
+                    <div class="info">
+                        <span class="nombre">${p.articulo} ${estaDeshabilitado ? '<small>(Promo otro día)</small>' : ''}</span>
+                        ${p.descripcion ? `<p class="descripcion">${p.descripcion}</p>` : ''}
+                        <span class="precio" style="${estaDeshabilitado ? 'text-decoration: line-through; color: gray;' : ''}">$${Number(p.precio).toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+        });
 
         divCat.innerHTML = html + `</div>`;
         menuCont.appendChild(divCat);
     });
 }
-
 function verificarHorario() {
 
     if (!menuConfig?.horarios) return true;
