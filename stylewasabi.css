@@ -96,30 +96,51 @@ body {
         gap: 16px; /* Espacio vertical entre tarjetas */
     }
 
-    /* Opcional: Ajustes en la tarjeta para que se vea más limpia */
-    .card-producto {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    /* Estilos para la descripción del producto */
-    .card-producto .info .descripcion {
-        font-size: 0.88rem;
-        color: #666; /* Color gris suave */
-        margin: 6px 0;
-        line-height: 1.3;
-        /* Limita a 2 o 3 líneas máximo con '...' si la descripción es muy larga (opcional) */
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
+/* ESTILO PARA LAS TARJETAS DE PRODUCTO */
+.card-producto {
+  background-color: var(--color-card, #1a1a1a); /* Fondo oscuro para resaltar la información */
+  border: 1px solid var(--color-borde, #e0e0e0); /* Borde sutil */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra para despegar del fondo */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card-producto:active { transform: scale(0.96); }
-.card-producto:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+.card-producto:hover {
+  border-color: var(--color-principal, #63b32e); /* Borde verde Wasabi al pasar el cursor */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* ÁREA DE INFORMACIÓN (TÍTULO, DESCRIPCIÓN Y PRECIO) */
+.card-producto-info {
+  padding: 1rem;
+  background-color: #1a1a1a; /* Garantiza fondo oscuro para texto claro */
+  color: #ffffff;
+}
+
+/* TÍTULO DEL PRODUCTO */
+.card-producto-titulo {
+  color: #ffffff;             /* Texto blanco legible sobre fondo oscuro */
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+/* DESCRIPCIÓN DEL PRODUCTO */
+.card-producto-descripcion {
+  color: var(--color-texto-secundario, #bfbfbf); /* Gris claro para lectura cómoda */
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+/* PRECIO */
+.card-producto-precio {
+  color: var(--color-secundario, #e31e24); /* Rojo característico de la marca */
+  font-size: 1.15rem;
+  font-weight: 800;
+}
 
 /* Contenedor de Imagen o 'Sin Foto' */
 .contenedor-media {
@@ -146,21 +167,12 @@ body {
 }
 
 .sin-foto::after {
-  content: '🍔'; /* Icono por defecto */
+  content: '🍣'; /* Icono por defecto */
   font-size: 2.5rem;
   opacity: 0.2;
 }
 
-.card-producto .info {
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
-}
 
-.card-producto .nombre { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
-.card-producto .precio { color: var(--color-secundario); font-weight: bold; font-size: 1.1rem; }
 
 /* =====================
     CARRITO FLOTANTE
@@ -857,5 +869,4 @@ img:not([src]) {
     background-color: rgba(255, 255, 255, 0.95); /* Blanco con leve transparencia */
     backdrop-filter: blur(4px); /* Efecto desfoque de fondo */
 }
-
 
