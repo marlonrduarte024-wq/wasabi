@@ -2,7 +2,7 @@
 
 :root {
   /* MARCA */
-  --color-principal: #f2b705;   /* amarillo hamburguesa */
+  --color-principal: #f2b705;   /* amarillo wasabi / sushi */
   --color-secundario: #ffd23f;  /* amarillo brillante */
   --color-acento: #ff8c00;      /* acento cálido */
 
@@ -15,7 +15,6 @@
   --color-texto: #ffffff;
   --color-texto-secundario: #bfbfbf;
 }
-
 * { box-sizing: border-box; }
 
 body {
