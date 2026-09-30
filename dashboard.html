@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor Distrito | API Local</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #121212; color: white; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121212; z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        #main-content { display: none; padding: 20px; }
+        .stat-card { background: #1e1e1e; border: 1px solid #333; border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s ease; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+        .stat-card:hover { background: #252525; border-color: #555; transform: translateY(-2px); }
+        .stat-card.active { border: 2px solid #fff; background: #2a2a2a; }
+        .stat-val { font-size: 1.3rem; font-weight: bold; display: block; word-break: break-all; }
+        .stat-label { font-size: 0.65rem; color: #888; text-transform: uppercase; margin-top: 2px; }
+        .pedido-card { border: none; border-left: 8px solid #444; margin-bottom: 15px; background-color: #1e1e1e; color: #e0e0e0; padding: 15px !important; }
+        .estado-RECIBIDO { border-left-color: #ffc107 !important; }
+        .estado-DESPACHADO { border-left-color: #0d6efd !important; }
+        .estado-ENTREGADO { border-left-color: #198754 !important; opacity: 0.8; }
+        .estado-CANCELADO { border-left-color: #dc3545 !important; opacity: 0.6; }
+        .cliente-info { font-size: 1.2rem; font-weight: bold; color: #fff; text-transform: uppercase; margin-bottom: 5px; }
+        .timeline-container { display: flex; flex-wrap: wrap; gap: 10px; background: #252525; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; width: fit-content; margin-bottom: 10px; border: 1px solid #333; }
+        .time-box { display: flex; align-items: center; gap: 4px; }
+        .time-box.text-danger { color: #dc3545 !important; }
+        .time-label { color: #888; font-size: 0.7rem; }
+        .detalle-box { background: #151515; border-radius: 8px; padding: 12px; border: 1px solid #2a2a2a; margin-top: 10px; white-space: pre-wrap; word-wrap: break-word; }
+        .badge-pago { background-color: #333; color: #00ff88; border: 1px solid #00ff88; font-weight: bold; display: inline-block; }
+        .info-local { font-size: 0.85rem; color: #bbb; }
+        .modal-content { background-color: #1e1e1e; color: white; border: 1px solid #444; }
+        .search-box { background: #1e1e1e; border: 1px solid #333; border-radius: 10px; padding: 10px; }
+        .animate-pulse { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
+    </style>
+</head>
+<body>
+
+<div id="login-overlay">
+    <div style="text-align: center; color: white; max-width: 300px; width: 90%;">
+        <h3>🔐 Acceso Distrito</h3>
+        <input type="password" id="pass-input" class="form-control bg-dark text-white border-secondary mb-2" placeholder="Contraseña">
+        <button onclick="validarClave()" class="btn btn-primary w-100 fw-bold">INGRESAR AL MONITOR</button>
+    </div>
+</div>
+
+<div id="main-content" class="container-fluid">
+    <div class="row mb-3 g-3">
+        <div class="col-12 col-md-4 col-xl-3">
+            <h2 class="mb-0">🚀 Monitor</h2>
+            <div id="status-badge" class="badge bg-success p-1" style="font-size: 0.6rem;">CONECTADO A API</div>
+            <button onclick="location.reload()" class="btn btn-link btn-sm text-danger p-0 d-block mt-1">Cerrar Sesión</button>
+            <div class="d-flex flex-wrap gap-1 mt-2">
+                <a href="https://distrito.menwapp.com/generador_promo.html" class="btn btn-outline-warning btn-sm fw-bold">⭐ PROMOS / HORARIOS</a>
+                <a href="https://distrito.menwapp.com/consultaint.html" class="btn btn-outline-warning btn-sm fw-bold">⭐ Consultar Rangos</a>
+                <a href="https://distrito.menwapp.com/ausencia.html" class="btn btn-outline-warning btn-sm fw-bold">Mensaje Ausencia</a>
+            </div>
+            <div class="search-box d-flex flex-column gap-2 mt-3">
+                <div class="d-flex gap-2 align-items-center">
+                    <span class="small text-secondary">📅</span>
+                    <input type="date" id="input-fecha" class="form-control form-control-sm bg-dark text-white border-secondary">
+                    <button onclick="consultarFechaManual()" class="btn btn-sm btn-outline-info">🔍</button>
+                    <button onclick="volverHoy()" class="btn btn-sm btn-outline-secondary" title="Volver a Hoy">🔄</button>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <span class="small text-secondary">👤</span>
+                    <input type="text" id="input-buscar-cliente" oninput="filtrarPorNombre()" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Buscar cliente...">
+                </div>
+                <button onclick="calcularProductosVendidos()" class="btn btn-sm btn-warning w-100 fw-bold mt-1 text-dark">📊 PRODUCTOS VENDIDOS</button>
+            </div>
+        </div>
+        <div class="col-12 col-md-8 col-xl-9">
+            <div class="row g-2 mb-2 row-cols-2 row-cols-sm-4">
+                <div class="col"><div class="stat-card" id="filter-RECIBIDO" onclick="aplicarFiltro('RECIBIDO')"><span class="stat-val text-warning" id="count-pendientes">0</span><span class="stat-label">Pendientes</span></div></div>
+                <div class="col"><div class="stat-card" id="filter-DESPACHADO" onclick="aplicarFiltro('DESPACHADO')"><span class="stat-val text-primary" id="count-camino">0</span><span class="stat-label">En Camino</span></div></div>
+                <div class="col"><div class="stat-card" id="filter-CANCELADO" onclick="aplicarFiltro('CANCELADO')"><span class="stat-val text-danger" id="count-cancelados">0</span><span class="stat-label">Cancelados</span></div></div>
+                <div class="col"><div class="stat-card" id="filter-ENTREGADO" onclick="aplicarFiltro('ENTREGADO')"><span class="stat-val text-success" id="count-entregados">0</span><span class="stat-label">Entregados</span></div></div>
+            </div>
+            <div class="row g-2 mb-2 row-cols-3">
+                <div class="col"><div class="stat-card active" id="filter-TODOS" onclick="aplicarFiltro('TODOS')"><span class="stat-val text-white" id="count-total">0</span><span class="stat-label">Total</span></div></div>
+                <div class="col"><div class="stat-card border-warning" style="cursor: default; background: #232015;"><span class="stat-val text-warning" id="count-domicilios">0 u</span><span class="stat-label">🛵 Domicilios</span></div></div>
+                <div class="col"><div class="stat-card border-purple" style="cursor: default; background: #1a1523; border-color: #a855f7 !important;"><span class="stat-val" id="count-recoger" style="color: #a855f7;">0 u</span><span class="stat-label">🏬 Recoger</span></div></div>
+            </div>
+            <div class="row g-2 mb-2 row-cols-2">
+                <div class="col"><div class="stat-card border-info" style="cursor: default; background: #141f27;"><span class="stat-val text-info" id="total-transferencia">$0</span><span class="stat-label">💵 Total Transferencia</span></div></div>
+                <div class="col"><div class="stat-card border-light" style="cursor: default; background: #222;"><span class="stat-val text-light" id="total-efectivo">$0</span><span class="stat-label">💰 Total Efectivo</span></div></div>
+            </div>
+            <div class="row g-2">
+                <div class="col-12"><div class="stat-card border-success" style="cursor: default; background: #112419; padding: 15px;"><span class="stat-val text-success" id="total-dinero" style="font-size: 1.8rem;">$0</span><span class="stat-label" id="label-dinero" style="font-size: 0.8rem; letter-spacing: 1px;">Total Vendido (Sin cancelados)</span></div></div>
+            </div>
+        </div>
+    </div>
+    <div id="contenedor-pedidos" class="row"></div>
+</div>
+<div class="modal fade" id="modalSuscripcion" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-warning">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-warning fw-bold">⚠️ RECORDATORIO IMPORTANTE</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <p class="fs-5 mb-0 px-2">
+          Recuerde que hoy <strong class="text-danger">11</strong> es la fecha de corte de tu suscripción, evita bloqueos del sistema.
+        </p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn btn-warning fw-bold px-4 text-dark" data-bs-dismiss="modal">ENTENDIDO</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const CLAVE_SECRETA = "Burgers2026";
+    const API_BASE = "https://nube.menwapp.com/api";
+    const FECHA_CORTE = "2026-10-11";
+    let pedidosCache = [];
+    let filtroActual = "TODOS";
+    let busquedaNombreActual = ""; 
+
+function validarClave() {
+    if (document.getElementById('pass-input').value === CLAVE_SECRETA) {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        
+        // Ejecutar funciones de carga y verificación aquí
+        cargarDatos();
+        verificarSuscripcion(); // Se verifica solo cuando el usuario entra
+        setInterval(cargarDatos, 10000);
+    } else { 
+        alert("Clave incorrecta"); 
+    }
+}
+// Nueva función más precisa
+function obtenerFechaLocal() {
+    // Obtiene la fecha en zona horaria de Bogotá
+    const d = new Date(new Date().toLocaleString("en-US", {timeZone: "America/Bogota"}));
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+function verificarSuscripcion() {
+    const hoy = obtenerFechaLocal();
+    console.log("Fecha actual:", hoy); // Útil para depurar en la consola del navegador (F12)
+
+    // Compara si la fecha actual es igual o mayor a la de corte
+    if (hoy >= FECHA_CORTE) {
+        const modalEl = document.getElementById('modalSuscripcion');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+}
+
+
+
+
+
+
+    async function cargarDatos(fechaTarget = null) {
+        const fecha = fechaTarget || document.getElementById('input-fecha').value;
+        try {
+            const response = await fetch(`${API_BASE}/obtener_pedidos?fecha=${fecha}`);
+            pedidosCache = await response.json() || [];
+            actualizarContadores();
+            dibujarPedidos();
+        } catch (e) { console.error("Error API:", e); }
+    }
+
+    function actualizarContadores() {
+        if (!Array.isArray(pedidosCache)) return;
+        const validos = pedidosCache.filter(p => p.estado !== 'CANCELADO');
+        document.getElementById('count-total').innerText = pedidosCache.length;
+        document.getElementById('count-pendientes').innerText = pedidosCache.filter(p => p.estado === 'RECIBIDO').length;
+        document.getElementById('count-camino').innerText = pedidosCache.filter(p => p.estado === 'DESPACHADO').length;
+        document.getElementById('count-entregados').innerText = pedidosCache.filter(p => p.estado === 'ENTREGADO').length;
+        document.getElementById('count-cancelados').innerText = pedidosCache.filter(p => p.estado === 'CANCELADO').length;
+        const totalDinero = validos.reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
+        document.getElementById('total-dinero').innerText = `$${totalDinero.toLocaleString()}`;
+        const transf = validos.filter(p => (p.metodo_pago || '').toLowerCase().includes('transferencia')).reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
+        const efec = validos.filter(p => !(p.metodo_pago || '').toLowerCase().includes('transferencia')).reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
+        document.getElementById('total-transferencia').innerText = `$${transf.toLocaleString()}`;
+        document.getElementById('total-efectivo').innerText = `$${efec.toLocaleString()}`;
+        document.getElementById('count-domicilios').innerText = `${validos.length - validos.filter(p => (p.barrio || '').trim().toUpperCase() === 'LOCAL').length} u`;
+        document.getElementById('count-recoger').innerText = `${validos.filter(p => (p.barrio || '').trim().toUpperCase() === 'LOCAL').length} u`;
+    }
+
+    function calcularProductosVendidos() {
+        const conteoProductos = {};
+        pedidosCache.filter(p => p.estado !== 'CANCELADO').forEach(pedido => {
+            (pedido.detalle_pedido || "").split('\n').forEach(linea => {
+                const matchFormato = linea.match(/•\s*(\d+)\s*x\s*([^$]+)/i);
+                if (matchFormato) {
+                    const cantidad = parseInt(matchFormato[1]);
+                    const producto = matchFormato[2].trim().toUpperCase();
+                    if (cantidad > 0 && producto && !producto.includes("TOTAL") && !producto.includes("RESUMEN")) {
+                        conteoProductos[producto] = (conteoProductos[producto] || 0) + cantidad;
+                    }
+                }
+            });
+        });
+        const listaOrdenada = Object.keys(conteoProductos).map(nombre => ({ nombre, cantidad: conteoProductos[nombre] })).sort((a, b) => b.cantidad - a.cantidad);
+        const tablaCuerpo = document.getElementById('tabla-productos-cuerpo');
+        tablaCuerpo.innerHTML = listaOrdenada.length === 0 ? `<tr><td colspan="3" class="text-center text-muted py-3">No hay productos registrados.</td></tr>` : listaOrdenada.map((item, index) => `<tr><td class="text-center text-secondary">${index + 1}</td><td class="text-white">${item.nombre}</td><td class="text-end text-success fw-bold">${item.cantidad} u</td></tr>`).join('');
+        new bootstrap.Modal(document.getElementById('modalProductosVendidos')).show();
+    }
+
+    function dibujarPedidos() {
+        const contenedor = document.getElementById('contenedor-pedidos');
+        contenedor.innerHTML = '';
+        let filtrados = filtroActual === "TODOS" ? pedidosCache : pedidosCache.filter(p => p.estado === filtroActual);
+        if (busquedaNombreActual !== "") filtrados = filtrados.filter(p => (p.cliente || '').toLowerCase().includes(busquedaNombreActual));
+
+        filtrados.forEach(p => {
+            const esTransferencia = (p.metodo_pago || '').toLowerCase().includes('transferencia');
+            const esRecoger = (p.barrio || '').trim().toUpperCase() === 'LOCAL';
+            const badgeEntrega = esRecoger ? `<span class="badge text-white border border-purple" style="background-color: #a855f7;">🏬 RECOGE LOCAL</span>` : `<span class="badge bg-dark text-white border border-warning">🛵 DOMICILIO</span>`;
+            
+            const div = document.createElement('div');
+            div.className = "col-12 col-xxl-6 mb-3";
+            div.innerHTML = `
+                <div class="card pedido-card shadow estado-${p.estado}">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                        <div style="flex: 1; min-width: 200px;">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                <span class="badge bg-dark border border-secondary text-info">#${p.id_pedido_local || '??'}</span>
+                                <span class="badge bg-secondary" style="font-size:0.7rem">${p.estado || 'RECIBIDO'}</span>
+                                ${badgeEntrega}
+                            </div>
+                            <div class="cliente-info">${(p.cliente || 'CLIENTE SIN NOMBRE').toUpperCase()}</div>
+                            <div class="timeline-container">
+                                <div class="time-box"><span class="time-label">RECIBIDO:</span> <b>${formatearH(p.hora_ingreso)}</b></div>
+                                <div class="time-box text-primary"><span class="time-label text-primary">DESPACHO:</span> <b>${formatearH(p.hora_despacho)}</b></div>
+                                <div class="time-box text-success"><span class="time-label text-success">ENTREGA:</span> <b>${formatearH(p.hora_entrega)}</b></div>
+                            </div>
+                        </div>
+                        <div class="text-md-end text-start p-2 rounded" style="background: rgba(255,255,255,0.03); min-width: 130px; border: 1px solid #2a2a2a;">
+                            <h3 class="text-success fw-bold mb-0" style="font-size: 1.6rem; word-break: break-all;">$${parseFloat(p.total || 0).toLocaleString()}</h3>
+                            <span class="badge badge-pago px-2 py-1 mt-1" style="font-size: 0.75rem;">${(p.metodo_pago || 'EFECTIVO').toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-7">
+                            <p class="mb-2 info-local"><strong class="text-warning">📍 Dirección:</strong> ${p.direccion || 'No especificada'}</p>
+                            <p class="mb-2 info-local"><strong class="text-info">🏘️ Barrio:</strong> <span class="badge bg-dark text-white border border-info" style="font-size: 0.9rem;">${(p.barrio || 'SIN ESPECIFICAR').toUpperCase()}</span></p>
+                            <div class="detalle-box"><div class="detalle-texto">${p.detalle_pedido || 'Sin detalles'}</div></div>
+                        </div>
+                        <div class="col-md-5 text-end d-flex flex-column justify-content-end gap-2 mt-3 mt-md-0">
+                            ${esTransferencia ? `<button onclick="verComprobante(${p.id_pedido_local})" class="btn ${p.validado ? 'btn-outline-success' : 'btn-outline-danger animate-pulse'} btn-sm fw-bold py-2 w-100">${p.validado ? '✅ PAGO VALIDADO (VER)' : '⚠️ SIN VALIDAR (REVISAR)'}</button>` : ''}
+                            <a href="${p.whatsapp_url || '#'}" target="_blank" class="btn btn-success btn-sm w-100 fw-bold py-2">📱 WHATSAPP</a>
+                        </div>
+                    </div>
+                </div>`;
+            contenedor.appendChild(div);
+        });
+    }
+
+    function formatearH(h) {
+        if (!h || h === "None" || h === "null") return "--:--";
+        if (h.length > 5) {
+            const date = new Date(h);
+            return !isNaN(date) ? date.toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit', hour12: false}) : "--:--";
+        }
+        return h;
+    }
+
+    function verComprobante(id) { 
+        document.getElementById('img-comprobante').src = `https://nube.menwapp.com/distrito/imagenes/pedido_${id}.jpg`;
+        new bootstrap.Modal(document.getElementById('modalComprobante')).show(); 
+    }
+    function consultarFechaManual() { cargarDatos(document.getElementById('input-fecha').value); }
+    function volverHoy() { cargarDatos(); }
+    function filtrarPorNombre() { busquedaNombreActual = document.getElementById('input-buscar-cliente').value.toLowerCase(); dibujarPedidos(); }
+    function aplicarFiltro(f) { filtroActual = f; dibujarPedidos(); }
+
+window.onload = () => {
+    // Usa la función unificada para poner la fecha en el input
+    document.getElementById('input-fecha').value = obtenerFechaLocal();
+    
+    // Verifica la suscripción
+  //  verificarSuscripcion();
+};
+</script>
+
+<div class="modal fade" id="modalComprobante" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header border-0"><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body p-0"><img id="img-comprobante" class="w-100"></div>
+    </div></div>
+</div>
+
+<div class="modal fade" id="modalProductosVendidos" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-warning fw-bold mb-0">📊 Ranking de Productos</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <table class="table table-dark table-striped"><tbody id="tabla-productos-cuerpo"></tbody></table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menú/Pedidos | GoldBurger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Estilos y Fuentes -->
+  <link rel="stylesheet" href="stylewasabi.css?v=25">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Librerías Externas -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=881330937559751&ev=PageView&noscript=1"/>
+  </noscript>
+  <!-- End Meta Pixel Code -->
+</head>
+<body>
+<!--<div style="background: #e65100; color: white; text-align: center; padding: 12px 15px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.15); position: relative; z-index: 9999;">
+  📢 ATENCIÓN: Para brindarte un mejor servicio, Por hoy solo estaremos despachando la promo
+</div>  -->
+
+<header class="seccion-portada">
+  <div id="portada" class="banner-principal"></div>
+  
+  <div class="portada-info-bar container">
+    <img id="portada-logo" class="logo-restaurante" src="" alt="Logo">
+    
+    <div class="portada-acciones">
+      <div class="portada-acciones">
+        <button onclick="mostrarUbicacion()" class="btn-accion-portada">
+            📍 Ubicación
+        </button>
+        
+        <a href="tel:+573182651393" class="btn-accion-portada" style="text-decoration: none;">
+            📞 Contacto
+        </a>
+
+        <button onclick="mostrarTablaHorarios()" class="btn-accion-portada">
+            🕒 Horarios
+        </button>
+        <a href="https://drive.google.com/file/d/1DMvgJ03AbKH13kdNR-z5xib-VpB3c7wG/view?fbclid=PAb21jcASYEYRleHRuA2FlbQIxMQBzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAacGtuI4XWeGXLKL9Kw8kYKWD8YVjhxWBXk-XDYEBfnUlpzwFJi8zu9r4nwdqA_aem_xlAa9blhjrZJLHdomDL9wQ&utm_source=ig&utm_medium=social&utm_content=link_in_bio" target="_blank" class="btn-accion-portada" style="text-decoration: none;">
+    📄 Menu pdf
+           </a>
+        
+       <!-- <button onclick="abrirModalReserva()" class="btn-accion-portada" style="background: #2563eb; color: white; border: none;">
+           📅 Reservas
+        </button> -->
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="contenedor-flotante-menu">
+    <button onclick="toggleCategorias()" class="btn-menu-lateral">
+       ☰ Categorías
+    </button>
+</div>
+
+<div id="sidebar-categorias" class="sidebar">
+    <div class="sidebar-header">
+        <h3>Menú</h3>
+        <button onclick="toggleCategorias()" class="btn-cerrar">✕</button>
+    </div>
+    <nav id="nav-categorias" class="categorias-nav">
+    </nav>
+</div>
+
+<div id="overlay-sidebar" onclick="toggleCategorias()"></div>
+
+<main id="menu" class="container">
+    </main>
+
+<button class="btn-carrito-flotante" onclick="toggleCarrito()">
+  🛒 <span id="carrito-count">0</span>
+</button>
+
+<div id="carrito-panel" class="carrito-panel">
+  <div class="carrito-header">
+    <h3>Tu Pedido</h3>
+    <button onclick="toggleCarrito()" style="background:none; border:none; font-size:1rem; cursor:pointer; color:#000;">Cerrar</button>
+  </div>
+  <div id="carrito-items" class="carrito-body"></div>
+  <div class="carrito-footer">
+    <div class="total" style="margin-bottom:15px; font-weight:700; font-size:1.2rem; display:flex; justify-content:space-between; color:#000;">
+      <span>Total:</span>
+      <span id="carrito-total">$0</span>
+    </div>
+    <button id="btn-whatsapp" class="btn-agregar-modal" onclick="enviarWhatsApp()" disabled>
+      Confirmar pedido vía WhatsApp
+    </button>
+  </div>
+</div>
+
+<div id="modal-producto" class="modal-overlay">
+  <div class="modal-box">
+    <button class="btn-cerrar-modal" onclick="cerrarModalProducto()">✕</button>
+    <img id="modal-img" class="modal-img" src="" alt="Producto">
+    <div class="modal-info">
+      <h2 id="modal-nombre">Cargando...</h2>
+      <p id="modal-desc" class="modal-descripcion" style="color:#666; margin:10px 0; font-size:0.9rem;"></p>
+      <span id="modal-precio" class="modal-precio" style="font-size:1.3rem; font-weight:700; color:var(--color-acento);"></span>
+      <div id="modal-acompanamientos-list" class="lista-acompanamientos"></div>
+      <div class="campo-observaciones" style="margin-top:15px;">
+        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.95rem;">¿Alguna nota especial?</label>
+        <textarea id="modal-obs" placeholder="Ej: Sin cebolla, término medio..." style="width:100%; height:70px; border-radius:10px; border:1px solid #ddd; padding:10px; font-family:inherit; resize:none; font-size:0.9rem;"></textarea>
+      </div>
+      <div class="selector-cantidad-modal">
+        <label style="font-weight:600; font-size:0.95rem;">Cantidad:</label>
+        <div class="controles-cantidad">
+          <button onclick="cambiarCantidad(-1)">-</button>
+          <input type="number" id="modal-cantidad" value="1" readonly>
+          <button onclick="cambiarCantidad(1)">+</button>
+        </div>
+      </div>
+      <button class="btn-agregar-modal" onclick="agregarDesdeModal()">Agregar al Pedido</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<footer class="footer-menwapp" style="text-align: center; padding: 20px; background: var(--color-fondo); color: var(--color-texto);">
+  <div class="logo">
+    <img src="https://capitalbga.menwapp.com/imagenes/ASCOMP.JPG" alt="ASCOMP Logo" style="height: 40px; width: auto; margin-bottom: 10px;">
+  </div>
+  
+  <div class="descripcion" style="font-size:0.85rem; opacity:0.8; margin:5px 0;">
+    Desarrollamos tu sistema de Gestor de pedidos con menú digital
+  </div>
+  
+  <div class="soporte">
+    <a class="btn-whatsapp-footer" 
+   href="https://wa.me/573152653104?text=hola,%20tengo%20un%20restaurante%20y%20quiero%20sistematizar%20mi%20negocio" 
+   target="_blank" 
+   style="display:inline-block; margin-top:10px; text-decoration:none; background:#25D366; color:white; padding:8px 15px; border-radius:20px; font-size:0.85rem; font-weight:600;">
+   📲 Información sobre el sistema
+</a>
+  </div>
+  
+  <div class="copyright" style="font-size:0.75rem; opacity:0.6; margin-top:15px;">
+    Solución hecha por <strong>ASCOMP</strong>
+    
+      <div class="copyright" style="font-size:0.75rem; opacity:0.6; margin-top:15px;">
+    exclusivo para el sistema POS <strong>ASCOMP</strong>
+  </div>
+</footer>
+
+<script src="script.js?v=22"></script>
+
+<script>
+  const PROYECTO_URL = "https://mmtgjmxfvuzkktktergc.supabase.co";
+  const PROYECTO_KEY = "sb_publishable_-xeWh1E1WCqs7ABAvAF0TA_hafx6fpV";
+  const supabaseCliente = supabase.createClient(PROYECTO_URL, PROYECTO_KEY);
+
+  window.addEventListener('beforeunload', function (e) {
+    if (typeof carrito !== 'undefined' && carrito.length > 0) {
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
+  });
+
+  function abrirModalReserva() {
+      document.getElementById("modal-reserva").style.display = "flex";
+  }
+
+  function cerrarModalReserva() {
+      document.getElementById("modal-reserva").style.display = "none";
+  }
+
+  // FUNCIÓN PARA CONVERTIR HORA A FORMATO AM/PM
+  function formatarHoraAMPM(hora24) {
+      if(!hora24) return "";
+      let [horas, minutos] = hora24.split(':');
+      let ampm = horas >= 12 ? 'PM' : 'AM';
+      horas = horas % 12;
+      horas = horas ? horas : 12; // la hora '0' debería ser '12'
+      return `${horas}:${minutos} ${ampm}`;
+  }
+
+  async function enviarReservaSupabase(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btn-enviar-reserva");
+      const horaInput = document.getElementById("res_hora").value;
+      
+      // Convertimos la hora antes de enviarla
+      const horaFormateada = formatarHoraAMPM(horaInput);
+
+      btn.disabled = true;
+      btn.innerText = "Procesando...";
+
+      const datos = {
+          fecha: document.getElementById("res_fecha").value,
+          hora_inicio: horaFormateada, // ✅ Ahora se guarda como "07:00 PM"
+          cliente: document.getElementById("res_nombre").value,
+          telefono: document.getElementById("res_telefono").value,
+          personas: parseInt(document.getElementById("res_personas").value),
+          motivo: document.getElementById("res_motivo").value,
+          decoracion: document.getElementById("res_decoracion").checked,
+          estado: "PENDIENTE",
+          fecha_estado: new Date().toISOString()
+      };
+
+try {
+          const { error } = await supabaseCliente.from('reserva').insert([datos]);
+          if (error) throw error;
+          Swal.fire({ title: '¡Solicitud Enviada!', text: 'Te avisaremos vía WhatsApp.', icon: 'success' });
+          cerrarModalReserva();
+          e.target.reset();
+      } catch (err) {
+          Swal.fire('Error', 'No se pudo guardar la reserva.', 'error');
+      } finally {
+          btn.disabled = false;
+          btn.innerText = "Enviar Solicitud";
+      }
+  } // <--- ESTA LLAVE FALTABA
+</script>
+
+<!-- MODAL DE CONFIRMACIÓN WHATSAPP -->
+<div id="modal-confirmacion" class="modal-overlay">
+  <div class="modal-box" style="text-align: center;">
+    <h3 style="color: #d32f2f; margin-bottom: 15px;">⚠️ ¡AVISO IMPORTANTE!</h3>
+    <p style="font-size: 0.95rem; line-height: 1.5; color: #333;">
+      En el siguiente paso se abrirá tu <strong>WhatsApp</strong> con un código de pedido generado automáticamente.
+    </p>
+    <div style="background: #fff3e0; padding: 10px; border-radius: 8px; margin: 15px 0; border: 1px solid #ffe0b2;">
+      <p style="font-weight: 700; margin: 0; color: #e65100;">❌ NO MODIFIQUES EL TEXTO</p>
+      <p style="font-size: 0.85rem; margin: 5px 0 0;">Si borras o cambias los códigos, no podremos procesar tu orden.</p>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button onclick="cerrarModalConfirmacion()" style="flex:1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #eee; cursor:pointer;">
+        Cancelar
+      </button>
+      <button onclick="confirmarYEnviar()" style="flex:1; padding: 12px; border-radius: 10px; border: none; background: #25D366; color: white; font-weight: 700; cursor:pointer;">
+        Entendido, enviar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE RESERVA -->
+<div id="modal-reserva" class="modal-overlay">
+  <div class="modal-box" style="max-width: 450px;">
+    <button class="btn-cerrar-modal" onclick="cerrarModalReserva()">✕</button>
+    <h2 style="text-align: center; margin-bottom: 20px;">Reserva tu Mesa</h2>
+    <form id="formReservaPublica" onsubmit="enviarReservaSupabase(event)" style="display: flex; flex-direction: column; gap: 12px;">
+      <input type="text" id="res_nombre" placeholder="Tu nombre" required style="padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+      <input type="tel" id="res_telefono" placeholder="WhatsApp / Teléfono" required style="padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+      <div style="display: flex; gap: 10px;">
+        <input type="date" id="res_fecha" required style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+        <input type="time" id="res_hora" required style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+      </div>
+      <input type="number" id="res_personas" placeholder="¿Cuántas personas?" min="1" required style="padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+      <textarea id="res_motivo" placeholder="¿Algún motivo o nota especial?" style="padding: 12px; border-radius: 8px; border: 1px solid #ddd; height: 80px; resize: none;"></textarea>
+      <div style="display: flex; align-items: center; gap: 10px; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+        <input type="checkbox" id="res_decoracion" style="width: 18px; height: 18px; cursor: pointer;">
+        <label for="res_decoracion" style="font-size: 0.9rem; font-weight: 600; cursor: pointer;">✨ ¿Deseas decoración especial?</label>
+      </div>
+      <button type="submit" id="btn-enviar-reserva" style="background: #2563eb; color: white; padding: 15px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px;">
+        Enviar Solicitud
+      </button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
