@@ -1,19 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;600&family=Poppins:wght@600&display=swap');
 
 :root {
-  /* MARCA */
-  --color-principal: #f2b705;   /* amarillo wasabi / sushi */
-  --color-secundario: #ffd23f;  /* amarillo brillante */
-  --color-acento: #ff8c00;      /* acento cálido */
+  /* MARCA (Tomados directamente del logo Wasabi) */
+  --color-principal: #63b32e;   /* Verde Wasabi */
+  --color-secundario: #e31e24;  /* Rojo marca / Sol japonés */
+  --color-acento: #4c8c20;      /* Verde Wasabi oscuro / Acento */
 
-  /* BASE */
-  --color-fondo: #0d0d0d;   /* negro profundo */
-  --color-card: #1a1a1a;    /* negro suave */
-  --color-borde: #2a2a2a;
+  /* BASE (Modo claro/limpio acorde a la marca) */
+  --color-fondo: #ffffff;       /* Blanco puro */
+  --color-card: #f8f9fa;        /* Blanco suave / Gris muy claro */
+  --color-borde: #e0e0e0;       /* Gris claro para bordes */
 
   /* TEXTO */
-  --color-texto: #ffffff;
-  --color-texto-secundario: #bfbfbf;
+  --color-texto: #1a1a1a;       /* Negro/Gris oscuro para lectura */
+  --color-texto-secundario: #666666; /* Gris medio */
 }
 * { box-sizing: border-box; }
 
