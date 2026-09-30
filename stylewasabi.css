@@ -890,3 +890,65 @@ img:not([src]) {
     background-color: rgba(255, 255, 255, 0.95); /* Blanco con leve transparencia */
     backdrop-filter: blur(4px); /* Efecto desfoque de fondo */
 }
+
+/* 1. CONTENEDOR GENERAL DE LA TARJETA */
+.card-producto, 
+[class*="product-card"], 
+[class*="card"] {
+  background-color: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+/* 2. AREA INFERIOR DE TEXTO E INFORMACIÓN */
+.card-producto-info,
+[class*="card-body"],
+[class*="product-info"] {
+  background-color: #f9f9f9 !important; /* Fondo gris muy claro para diferenciar */
+  padding: 12px 16px !important;
+  display: block !important;
+}
+
+/* 3. TÍTULO Y NOMBRE DEL PRODUCTO (FORZADO A NEGRO REGULAR) */
+.card-producto-titulo,
+.card-producto-titulo *,
+h3, h4, 
+[class*="title"], 
+[class*="name"] {
+  color: #111111 !important;            /* Negro puro para máximo contraste */
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  margin-bottom: 4px !important;
+}
+
+/* 4. PRECIO DEL PRODUCTO (ROJO MARCA WASABI) */
+.card-producto-precio,
+.card-producto-precio *,
+[class*="price"] {
+  color: #e31e24 !important;            /* Rojo intenso para el precio */
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-block !important;
+}
+
+/* 5. MOSTRAR LA DESCRIPCIÓN Y FORZAR TEXTO LEGBLE */
+.card-producto-descripcion,
+[class*="description"],
+[class*="desc"] {
+  display: block !important;             /* Quita el ocultamiento (display:none) */
+  visibility: visible !important;
+  height: auto !important;
+  max-height: none !important;
+  opacity: 1 !important;
+  color: #333333 !important;            /* Gris oscuro de alta lectura */
+  font-size: 0.88rem !important;
+  line-height: 1.4 !important;
+  margin-top: 6px !important;
+}
