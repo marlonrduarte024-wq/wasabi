@@ -154,13 +154,41 @@ body {
 }
 
 /* 5. TITULOS DE SECCIÓN Y BANNERS (PARA EVITAR QUE SE SOLAPEN) */
+/* CONSERVA O APLICA EL FONDO A LOS TÍTULOS DE CATEGORÍA Y SECCIÓN */
 .titulo-categoria,
-[class*="titulo"] {
+h2.titulo-categoria,
+.banner-categoria-grupo + h3,
+[class*="titulo-categoria"] {
+  background: rgba(255, 255, 255, 0.92) !important; /* Fondo blanco sólido/limpio */
+  backdrop-filter: blur(8px) !important;            /* Desenfoque de fondo si hay imagen */
+  color: #1a1a1a !important;                       /* Texto oscuro de alto contraste */
+  padding: 10px 18px !important;                     /* Espaciado interno estilo cápsula */
+  border-radius: 12px !important;                    /* Bordes redondeados modernos */
+  border: 1px solid var(--color-borde, #e0e0e0) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important; /* Sombra suave para separar de la imagen */
+  
+  display: inline-flex !important;                  /* Ancho adaptado al texto */
+  align-items: center !important;
+  gap: 8px !important;
+  
+  margin: 20px 0 12px 0 !important;                /* Márgenes arriba y abajo para evitar solapamientos */
   position: relative !important;
-  z-index: 2 !important;
-  margin-bottom: 12px !important;
-  clear: both !important;
+  z-index: 5 !important;                             /* Asegura que quede por encima del banner */
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
 }
+
+/* SI PREFIERES EL TÍTULO EN VERDE MARCA CON TEXTO BLANCO (OPCIÓN DESTACADA): */
+/*
+.titulo-categoria {
+  background: var(--color-principal, #63b32e) !important;
+  color: #000000 !important;
+  border: 1.5px solid #ffffff !important;
+}
+*/
 .card-producto:hover {
   border-color: var(--color-principal) !important;
   transform: translateY(-4px) !important;
