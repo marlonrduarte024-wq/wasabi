@@ -1,5 +1,8 @@
 
 
+
+
+
 // ============================================================
 // ESTADO GLOBAL
 // ============================================================
@@ -236,8 +239,6 @@ function abrirModalProducto(p) {
             }
         });
     }
-}
-
 
     // --- SECCIÓN: SUBTOTAL EN MODAL ---
     const divSubtotal = document.createElement("div");
@@ -250,11 +251,14 @@ function abrirModalProducto(p) {
     listCont.appendChild(divSubtotal);
 
     // Inicializar subtotal
-    actualizarSubtotalModal();
+    if (typeof actualizarSubtotalModal === "function") {
+        actualizarSubtotalModal();
+    }
 
-    // Lógica del botón agregar... (se mantiene igual)
+    // --- ESTADO DEL BOTÓN Y HORARIOS ---
     const btnAgregar = document.querySelector(".btn-agregar-modal");
-    const estaAbierto = verificarHorario(); 
+    const estaAbierto = typeof verificarHorario === "function" ? verificarHorario() : true; 
+    
     if (!estaAbierto) {
         btnAgregar.innerText = "Cerrado temporalmente";
         btnAgregar.style.background = "#555";
@@ -266,11 +270,12 @@ function abrirModalProducto(p) {
     }
     btnAgregar.style.marginBottom = "30px"; 
     btnAgregar.style.position = "relative";
+
     document.getElementById("modal-producto").classList.add("activo");
     history.pushState({ modal: "producto" }, "");
 }
 
-// --- FUNCIÓN PARA VALIDAR LÍMITE DE CHECKBOXES ---
+// --- FUNCIÓN AUXILIAR DE VALIDACIÓN DE LÍMITE ---
 function validarSeleccionAcomp(input) {
     if (input.type !== "checkbox") return;
 
@@ -282,7 +287,6 @@ function validarSeleccionAcomp(input) {
         alert(`Solo puedes seleccionar hasta ${max} opción(es) para este acompañamiento.`);
     }
 }
-
 function cambiarCantAdic(btn, delta) {
     const input = btn.parentElement.querySelector('.input-adic');
     let valor = parseInt(input.value) + delta;
@@ -1206,6 +1210,17 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
+
+
+
+
+
+
+
+
+
+
 
 
 
