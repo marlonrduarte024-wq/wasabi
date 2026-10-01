@@ -250,6 +250,7 @@ function validarSeleccionAcomp(input) {
         alert(`Solo puedes seleccionar hasta ${max} opción(es) para este acompañamiento.`);
     }
 }
+
     // --- SECCIÓN: SUBTOTAL EN MODAL ---
     const divSubtotal = document.createElement("div");
     divSubtotal.id = "contenedor-subtotal-modal";
@@ -1203,12 +1204,6 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
-
-
-
-
-
-
 
 
 
