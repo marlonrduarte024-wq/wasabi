@@ -854,7 +854,7 @@ function mostrarHorarios() {
     });
 }
 function mostrarUbicacion() {
-    const direccion = "Cl. 43 #34-25 barrio El Prado, Bucaramanga";
+    const direccion = "Wasabi Sushi House, Cra. 36 #38-56 Piso 2, Bucaramanga, Santander";
     
     Swal.fire({
         title: '📍 Ubicación',
