@@ -238,18 +238,6 @@ function abrirModalProducto(p) {
     }
 }
 
-// --- FUNCIÓN PARA VALIDAR LÍMITE DE CHECKBOXES ---
-function validarSeleccionAcomp(input) {
-    if (input.type !== "checkbox") return;
-
-    const max = parseInt(input.dataset.max, 10);
-    const checkboxes = document.querySelectorAll(`input[name="${input.name}"]:checked`);
-
-    if (checkboxes.length > max) {
-        input.checked = false;
-        alert(`Solo puedes seleccionar hasta ${max} opción(es) para este acompañamiento.`);
-    }
-}
 
     // --- SECCIÓN: SUBTOTAL EN MODAL ---
     const divSubtotal = document.createElement("div");
@@ -281,6 +269,20 @@ function validarSeleccionAcomp(input) {
     document.getElementById("modal-producto").classList.add("activo");
     history.pushState({ modal: "producto" }, "");
 }
+
+// --- FUNCIÓN PARA VALIDAR LÍMITE DE CHECKBOXES ---
+function validarSeleccionAcomp(input) {
+    if (input.type !== "checkbox") return;
+
+    const max = parseInt(input.dataset.max, 10);
+    const checkboxes = document.querySelectorAll(`input[name="${input.name}"]:checked`);
+
+    if (checkboxes.length > max) {
+        input.checked = false;
+        alert(`Solo puedes seleccionar hasta ${max} opción(es) para este acompañamiento.`);
+    }
+}
+
 function cambiarCantAdic(btn, delta) {
     const input = btn.parentElement.querySelector('.input-adic');
     let valor = parseInt(input.value) + delta;
@@ -1204,6 +1206,9 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
+
+
 
 
 
