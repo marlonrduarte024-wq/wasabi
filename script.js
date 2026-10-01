@@ -163,61 +163,93 @@ function abrirModalProducto(p) {
     // --- SECCIÓN: ACOMPAÑAMIENTOS ---
     if (acompanamientosConfig?.productos?.[cod]) {
         acompanamientosConfig.productos[cod].forEach(nombreGrupo => {
-            const opciones = acompanamientosConfig.grupos[nombreGrupo];
-            if (opciones) {
+            const configGrupo = acompanamientosConfig.grupos[nombreGrupo];
+            
+            if (configGrupo) {
+                // Soporte para formato antiguo (array) o nuevo (objeto con max y opciones)
+                const opciones = Array.isArray(configGrupo) ? configGrupo : (configGrupo.opciones || []);
+                const maxPermitido = configGrupo.max || 1;
+                
+                // Determinar el tipo de input según el límite
+                const inputType = maxPermitido === 1 ? "radio" : "checkbox";
+                const textoMax = maxPermitido > 1 ? ` (Máx. ${maxPermitido})` : "";
+
                 const div = document.createElement("div");
-                div.innerHTML = `<h4 style="margin:15px 0 8px 0; font-size:0.9rem;">Selecciona tu ${nombreGrupo}:</h4>`;
+                div.className = "seccion-grupo-acomp";
+                div.innerHTML = `<h4 style="margin:15px 0 8px 0; font-size:0.9rem;">Selecciona tu ${nombreGrupo}${textoMax}:</h4>`;
+
                 opciones.forEach((op, idx) => {
+                    // Para radio selecciona el primero por defecto; para checkbox se dejan desmarcados
+                    const isChecked = (inputType === "radio" && idx === 0) ? "checked" : "";
+
                     div.innerHTML += `
-                        <label class="item-acomp">
-                            <input type="radio" name="grupo_${nombreGrupo}" value="${op}" ${idx === 0 ? 'checked' : ''}> 
+                        <label class="item-acomp" style="display:flex; align-items:center; gap:8px; margin-bottom:6px; cursor:pointer;">
+                            <input type="${inputType}" 
+                                   name="grupo_${nombreGrupo}" 
+                                   value="${op}" 
+                                   data-max="${maxPermitido}" 
+                                   onchange="validarSeleccionAcomp(this)" 
+                                   ${isChecked}> 
                             <span>${op}</span>
                         </label>`;
                 });
+
                 listCont.appendChild(div);
             }
         });
     }
 
-// --- SECCIÓN: ADICIONALES (Corregida con búsqueda de precio real) ---
-if (adicionalesConfig?.productos?.[cod]) {
-    adicionalesConfig.productos[cod].forEach(nombreGrupo => {
-        const opciones = adicionalesConfig.grupos[nombreGrupo];
-        if (opciones) {
-            const divAdic = document.createElement("div");
-            divAdic.className = "seccion-adicionales";
-            divAdic.innerHTML = `<h4 style="margin:20px 0 10px 0; font-size:0.9rem; border-top:1px solid #eee; padding-top:10px;">${nombreGrupo}:</h4>`;
-            
-            opciones.forEach(op => {
-                // BUSCAMOS EL PRECIO REAL EN EL MENÚ USANDO EL CÓDIGO
-                const productoEnMenu = encontrarProductoPorCodigo(op.codigo);
-                const precioReal = productoEnMenu ? Number(productoEnMenu.precio) : 0;
+    // --- SECCIÓN: ADICIONALES ---
+    if (adicionalesConfig?.productos?.[cod]) {
+        adicionalesConfig.productos[cod].forEach(nombreGrupo => {
+            const opciones = adicionalesConfig.grupos[nombreGrupo];
+            if (opciones) {
+                const divAdic = document.createElement("div");
+                divAdic.className = "seccion-adicionales";
+                divAdic.innerHTML = `<h4 style="margin:20px 0 10px 0; font-size:0.9rem; border-top:1px solid #eee; padding-top:10px;">${nombreGrupo}:</h4>`;
+                
+                opciones.forEach(op => {
+                    const productoEnMenu = encontrarProductoPorCodigo(op.codigo);
+                    const precioReal = productoEnMenu ? Number(productoEnMenu.precio) : 0;
 
-                const itemDiv = document.createElement("div");
-                itemDiv.style = "display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; background:#f4f4f4; padding:8px 12px; border-radius:10px;";
-                itemDiv.innerHTML = `
-                    <div style="display:flex; flex-direction:column;">
-                        <span style="font-size:0.85rem; font-weight:600; color:#333;">${op.nombre}</span>
-                        <span style="font-size:0.75rem; color:#dca600; font-weight:bold;">+$${precioReal.toLocaleString()}</span>
-                    </div>
-                    <div class="controles-cantidad-adic" style="display:flex; align-items:center; gap:12px;">
-                        <button onclick="cambiarCantAdic(this, -1)" style="width:28px; height:28px; border-radius:50%; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:bold;">-</button>
-                        <input type="number" class="input-adic" 
-                               data-codigo="${op.codigo}" 
-                               data-nombre="${op.nombre}" 
-                               data-precio="${precioReal}" 
-                               value="0" readonly 
-                               style="width:25px; text-align:center; border:none; background:transparent; font-weight:bold; font-size:0.9rem;">
-                        <button onclick="cambiarCantAdic(this, 1)" style="width:28px; height:28px; border-radius:50%; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:bold;">+</button>
-                    </div>
-                `;
-                divAdic.appendChild(itemDiv);
-            });
-            listCont.appendChild(divAdic);
-        }
-    });
+                    const itemDiv = document.createElement("div");
+                    itemDiv.style = "display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; background:#f4f4f4; padding:8px 12px; border-radius:10px;";
+                    itemDiv.innerHTML = `
+                        <div style="display:flex; flex-direction:column;">
+                            <span style="font-size:0.85rem; font-weight:600; color:#333;">${op.nombre}</span>
+                            <span style="font-size:0.75rem; color:#dca600; font-weight:bold;">+$${precioReal.toLocaleString()}</span>
+                        </div>
+                        <div class="controles-cantidad-adic" style="display:flex; align-items:center; gap:12px;">
+                            <button onclick="cambiarCantAdic(this, -1)" style="width:28px; height:28px; border-radius:50%; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:bold;">-</button>
+                            <input type="number" class="input-adic" 
+                                   data-codigo="${op.codigo}" 
+                                   data-nombre="${op.nombre}" 
+                                   data-precio="${precioReal}" 
+                                   value="0" readonly 
+                                   style="width:25px; text-align:center; border:none; background:transparent; font-weight:bold; font-size:0.9rem;">
+                            <button onclick="cambiarCantAdic(this, 1)" style="width:28px; height:28px; border-radius:50%; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:bold;">+</button>
+                        </div>
+                    `;
+                    divAdic.appendChild(itemDiv);
+                });
+                listCont.appendChild(divAdic);
+            }
+        });
+    }
 }
 
+// --- FUNCIÓN PARA VALIDAR LÍMITE DE CHECKBOXES ---
+function validarSeleccionAcomp(input) {
+    if (input.type !== "checkbox") return;
+
+    const max = parseInt(input.dataset.max, 10);
+    const checkboxes = document.querySelectorAll(`input[name="${input.name}"]:checked`);
+
+    if (checkboxes.length > max) {
+        input.checked = false;
+        alert(`Solo puedes seleccionar hasta ${max} opción(es) para este acompañamiento.`);
+    }
+}
     // --- SECCIÓN: SUBTOTAL EN MODAL ---
     const divSubtotal = document.createElement("div");
     divSubtotal.id = "contenedor-subtotal-modal";
@@ -1171,14 +1203,6 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
-
-
-
-
-
-
-
-
 
 
 
