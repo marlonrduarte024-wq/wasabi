@@ -1,8 +1,5 @@
 
 
-
-
-
 // ============================================================
 // ESTADO GLOBAL
 // ============================================================
@@ -379,7 +376,7 @@ function actualizarVistaCarrito() {
             </div>`;
     });
 
-   if (carrito.length > 0) {
+    if (carrito.length > 0) {
         cont.innerHTML += `
             <div style="text-align: right; margin-top: 15px; margin-bottom: 10px;">
                 <button onclick="vaciarCarritoCompleto()" style="background: none; border: none; color: #ff4444; font-size: 0.85rem; font-weight: bold; cursor: pointer; padding: 5px 10px; transition: 0.2s;">
@@ -387,12 +384,12 @@ function actualizarVistaCarrito() {
                 </button>
             </div>
             <div style="margin-top:20px; 
-                    padding:15px; 
-                    padding-bottom: 20px; 
-                    background:#1a1a1a; 
-                    border-radius:12px; 
-                    border:1px solid #333; 
-                    margin-bottom: 50px;"> 
+                        padding:15px; 
+                        padding-bottom: 20px; 
+                        background:#1a1a1a; 
+                        border-radius:12px; 
+                        border:1px solid #333; 
+                        margin-bottom: 50px;"> 
                 <p style="font-size:0.75rem; font-weight:bold; margin-bottom:12px; text-align:center; color:#fff; letter-spacing:1px;">¿DOMICILIO O RECOGER EN LOCAL?</p>
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
                     <label style="flex:1; cursor:pointer;">
@@ -409,13 +406,13 @@ function actualizarVistaCarrito() {
                     ⚠️ Recuerda que todo pedido para recoger se debe pagar previamente, sigue el proceso y en el chat te enviamos la llave para la transferencia
                 </div>
                 
-                <!-- 📱 OBLIGATORIO SIEMPRE: Número de Teléfono (Se muestra al seleccionar cualquier método) -->
+                <!-- 📱 OBLIGATORIO SIEMPRE: Número de Teléfono -->
                 <div id="contenedor-telefono-web" style="display:none; margin-top:15px; border-top:1px solid #333; padding-top:15px;">
                     <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Número de Celular (WhatsApp):</label>
                     <input type="tel" id="web-telefono" placeholder="Ej. 3016610768" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');" style="width:100%; padding:8px; border-radius:6px; border:1px solid #444; background:#222; color:#fff; box-sizing:border-box; font-size:0.85rem;">
                 </div>
 
-                <!-- 📍 DINÁMICO: Solo para Domicilio (Nombre, Dirección, Barrio) -->
+                <!-- 📍 DINÁMICO: Solo para Domicilio -->
                 <div id="formulario-cliente-web" style="display:none; flex-direction:column; gap:10px; margin-top:10px;">
                     <div>
                         <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Tu Nombre completo:</label>
@@ -438,14 +435,17 @@ function actualizarVistaCarrito() {
     if (countFlotante) countFlotante.innerText = itemsTotales;
     if (btnFlotante) btnFlotante.style.display = itemsTotales > 0 ? "flex" : "none";
 }
+
 function agregarDesdeModal() {
     if (!productoModal) return;
     
     const obs = document.getElementById("modal-obs").value.trim();
     const cantPrincipal = parseInt(document.getElementById("modal-cantidad").value) || 1;
     
-    // 1. Obtener Acompañamientos (Radios originales - No suman precio)
-    const seleccionados = Array.from(document.querySelectorAll("#modal-acompanamientos-list input[type='radio']:checked")).map(c => c.value);
+    // 1. Obtener Acompañamientos (Acepta 'radio' Y 'checkbox' marcados)
+    const seleccionados = Array.from(
+        document.querySelectorAll("#modal-acompanamientos-list input[type='radio']:checked, #modal-acompanamientos-list input[type='checkbox']:checked")
+    ).map(c => c.value);
     
     let finalObs = seleccionados.length ? "Con: " + seleccionados.join(", ") : "";
     if (obs) finalObs += (finalObs ? " | " : "") + obs;
@@ -477,7 +477,7 @@ function agregarDesdeModal() {
             const adicionalItem = {
                 codigo: codAdic,
                 nombre: `(+) ${input.dataset.nombre}`, 
-                precio: precioReal, // <--- AQUÍ ya no es 0, toma el valor del JSON
+                precio: precioReal,
                 observacion: `Adicional para: ${productoModal.articulo}`,
                 cantidad: cantAdic
             };
@@ -1210,6 +1210,12 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
+
+
+
+
+
 
 
 
