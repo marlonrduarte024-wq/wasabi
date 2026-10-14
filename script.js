@@ -937,6 +937,8 @@ function renderMenu() {
                     hayRecomendados = true;
 
                     const img = imagenes[cod] || p.imagen;
+                    // ✅ Naballigi a pannakakilala ti deskripsion babaen ti descripciones[cod]
+                    const desc = (typeof descripciones !== 'undefined' && descripciones[cod]) || p.descripcion || "";
 
                     htmlChef += `
                         <div class="card-producto card-recomendado" onclick='abrirModalProducto(${JSON.stringify(p)})'>
@@ -946,7 +948,7 @@ function renderMenu() {
                             </div>
                             <div class="info">
                                 <span class="nombre">${p.articulo}</span>
-                                ${p.descripcion ? `<p class="descripcion">${p.descripcion}</p>` : ''}
+                                ${desc ? `<p class="descripcion">${desc}</p>` : ''}
                                 <span class="precio">$${Number(p.precio).toLocaleString()}</span>
                             </div>
                         </div>
@@ -1035,6 +1037,9 @@ function renderMenu() {
 
             const estaDeshabilitado = esRecomendadoGeneral && !esRecHoy;
 
+            // ✅ Naballigi a pannakakilala ti deskripsion babaen ti descripciones[cod]
+            const desc = (typeof descripciones !== 'undefined' && descripciones[cod]) || p.descripcion || "";
+
             html += `
                 <div class="card-producto ${estaDeshabilitado ? 'producto-deshabilitado' : ''}" 
                      ${estaDeshabilitado ? '' : `onclick='abrirModalProducto(${JSON.stringify(p)})'`}>
@@ -1045,7 +1050,7 @@ function renderMenu() {
                     </div>
                     <div class="info">
                         <span class="nombre">${p.articulo} ${estaDeshabilitado ? '<small>(Promo otro día)</small>' : ''}</span>
-                        ${p.descripcion ? `<p class="descripcion">${p.descripcion}</p>` : ''}
+                        ${desc ? `<p class="descripcion">${desc}</p>` : ''}
                         <span class="precio" style="${estaDeshabilitado ? 'text-decoration: line-through; color: gray;' : ''}">$${Number(p.precio).toLocaleString()}</span>
                     </div>
                 </div>
