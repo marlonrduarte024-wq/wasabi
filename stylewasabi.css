@@ -119,6 +119,11 @@ body {
 /* ==========================================
    4. GRID Y TARJETAS DE PRODUCTO (ESTILO NUEVO)
    ========================================== */
+
+
+/* ==========================================
+   4. GRID Y TARJETAS DE PRODUCTO
+   ========================================== */
 .grid-productos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -133,7 +138,7 @@ body {
 }
 
 .card-producto {
-  background-color: #0d616d !important; /* Color turquesa/oscuro unificado */
+  background-color: #0d616d !important;
   border-radius: 12px !important;
   overflow: hidden !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
@@ -185,7 +190,7 @@ body {
   opacity: 0.5;
 }
 
-/* ÁREA DE INFORMACIÓN (CONTENEDOR DE TEXTO) */
+/* ÁREA DE INFORMACIÓN DE LA TARJETA */
 .card-producto .info {
   padding: 20px !important;
   display: flex !important;
@@ -204,7 +209,7 @@ body {
   display: block !important;
 }
 
-/* DESCRIPCIÓN DEL PRODUCTO */
+/* DESCRIPCIÓN DEL PRODUCTO (AQUÍ ESTÁ EL CAMBIO) */
 .card-producto .info .descripcion {
   font-family: 'truenolight', sans-serif !important;
   font-size: 0.95rem !important;
@@ -212,6 +217,8 @@ body {
   margin: 0 0 16px 0 !important;
   color: #e0f2f1 !important;
   display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* PRECIO DEL PRODUCTO */
