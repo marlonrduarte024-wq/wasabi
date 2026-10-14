@@ -1,5 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap');
 
+/* ==========================================
+   1. FUENTES PERSONALIZADAS
+   ========================================== */
+@font-face {
+  font-family: 'truenoregular';
+  src: url('https://www.hipermarfish.com/fonts/truenorg_1-webfont.woff2') format('woff2'),
+       url('https://www.hipermarfish.com/fonts/truenorg_1-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'truenoextrabold';
+  src: url('https://www.hipermarfish.com/fonts/truenoexbd_1-webfont.woff2') format('woff2'),
+       url('https://www.hipermarfish.com/fonts/truenoexbd_1-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'truenolight';
+  src: url('https://www.hipermarfish.com/fonts/truenolt-webfont.woff2') format('woff2'),
+       url('https://www.hipermarfish.com/fonts/truenolt-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ==========================================
+   2. VARIABLES Y BASE
+   ========================================== */
 :root {
   /* MARCA WASABI */
   --color-principal: #63b32e;   /* Verde Wasabi */
@@ -7,13 +35,13 @@
   --color-acento: #4c8c20;      /* Verde Wasabi oscuro */
 
   /* BASE Y CONTRASTE */
-  --color-fondo: #ffffff;       /* Blanco puro */
-  --color-card: #f8f9fa;        /* Blanco suave / Gris muy claro */
-  --color-borde: #e0e0e0;       /* Gris claro para bordes */
+  --color-fondo: #ffffff;
+  --color-card: #f8f9fa;
+  --color-borde: #e0e0e0;
 
   /* TEXTO */
-  --color-texto: #1a1a1a;       /* Negro/Gris oscuro para lectura */
-  --color-texto-secundario: #666666; /* Gris medio */
+  --color-texto: #1a1a1a;
+  --color-texto-secundario: #666666;
 
   /* SOMBRAS PREMIUM */
   --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -28,8 +56,8 @@ body {
   margin: 0;
   background: var(--color-fondo);
   color: var(--color-texto);
-  font-family: 'Inter', sans-serif;
-  padding-bottom: 90px; /* Espacio para el carrito flotante */
+  font-family: 'truenolight', 'Inter', sans-serif;
+  padding-bottom: 90px;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -39,9 +67,9 @@ body {
   padding: 20px;
 }
 
-/* =====================
-    NAV CATEGORIAS - VERTICAL
-===================== */
+/* ==========================================
+   3. NAV CATEGORIAS - VERTICAL
+   ========================================== */
 .categorias-nav {
   display: flex;
   flex-direction: column;
@@ -88,9 +116,9 @@ body {
   border-left: 5px solid var(--color-acento);
 }
 
-/* =====================
-    GRID PRODUCTOS
-===================== */
+/* ==========================================
+   4. GRID Y TARJETAS DE PRODUCTO (ESTILO NUEVO)
+   ========================================== */
 .grid-productos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -99,135 +127,34 @@ body {
 
 @media (max-width: 768px) {
   .grid-productos {
-    display: grid;
     grid-template-columns: 1fr !important;
-    gap: 16px;
+    gap: 20px;
   }
 }
 
-/* ==========================================
-   📦 ESTILO PARA LAS TARJETAS DE PRODUCTO
-   ========================================== */
-
-/* 1. SEPARACIÓN Y MARGEN DE LA TARJETA */
 .card-producto {
-  background-color: #ffffff !important;
-  border: 1px solid var(--color-borde, #e0e0e0) !important;
-  border-radius: 16px !important;
+  background-color: #0d616d !important; /* Color turquesa/oscuro unificado */
+  border-radius: 12px !important;
   overflow: hidden !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   display: flex !important;
   flex-direction: column !important;
-  margin-top: 15px !important; /* CORREGIDO: Evita que se monte sobre los títulos de sección */
   position: relative !important;
-  z-index: 1 !important;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 2. AREA DE INFORMACIÓN INFERIOR (PADDING Y FLEXBOX) */
-.card-producto-info {
-  padding: 14px 16px 18px 16px !important; /* CORREGIDO: Espacio interno en los bordes y abajo */
-  background-color: #ffffff !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 6px !important;
-}
-
-/* 3. TÍTULO DEL PRODUCTO */
-.card-producto-titulo,
-.card-producto h3,
-.card-producto h4 {
-  color: #1a1a1a !important;
-  font-size: 1.1rem !important;
-  font-weight: 700 !important;
-  margin: 0 !important;
-  line-height: 1.3 !important;
-  display: block !important;
-}
-
-/* 4. PRECIO DEL PRODUCTO */
-.card-producto-precio {
-  color: var(--color-secundario, #e31e24) !important;
-  font-size: 1.2rem !important;
-  font-weight: 800 !important;
-  margin-top: 2px !important;
-  display: block !important;
-}
-
-/* 5. TITULOS DE SECCIÓN Y BANNERS (PARA EVITAR QUE SE SOLAPEN) */
-/* CONSERVA O APLICA EL FONDO A LOS TÍTULOS DE CATEGORÍA Y SECCIÓN */
-.titulo-categoria,
-h2.titulo-categoria,
-.banner-categoria-grupo + h3,
-[class*="titulo-categoria"] {
-  background: rgba(255, 255, 255, 0.92) !important; /* Fondo blanco sólido/limpio */
-  backdrop-filter: blur(8px) !important;            /* Desenfoque de fondo si hay imagen */
-  color: #1a1a1a !important;                       /* Texto oscuro de alto contraste */
-  padding: 10px 18px !important;                     /* Espaciado interno estilo cápsula */
-  border-radius: 12px !important;                    /* Bordes redondeados modernos */
-  border: 1px solid var(--color-borde, #e0e0e0) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important; /* Sombra suave para separar de la imagen */
-  
-  display: inline-flex !important;                  /* Ancho adaptado al texto */
-  align-items: center !important;
-  gap: 8px !important;
-  
-  margin: 20px 0 12px 0 !important;                /* Márgenes arriba y abajo para evitar solapamientos */
-  position: relative !important;
-  z-index: 5 !important;                             /* Asegura que quede por encima del banner */
-  font-family: 'Poppins', sans-serif !important;
-  font-size: 1.15rem !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-}
-
-/* SI PREFIERES EL TÍTULO EN VERDE MARCA CON TEXTO BLANCO (OPCIÓN DESTACADA): */
-/*
-.titulo-categoria {
-  background: var(--color-principal, #63b32e) !important;
-  color: #000000 !important;
-  border: 1.5px solid #ffffff !important;
-}
-*/
 .card-producto:hover {
-  border-color: var(--color-principal) !important;
   transform: translateY(-4px) !important;
-  box-shadow: var(--sombra-elevada) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
 }
 
 /* ÁREA DE IMAGEN */
-.card-producto-img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  background-color: #f0f0f0;
-  transition: transform 0.4s ease;
-}
-
-.card-producto:hover .card-producto-img {
-  transform: scale(1.03);
-}
-
-
-
-
-/* DESCRIPCIÓN DEL PRODUCTO */
-.card-producto-descripcion {
-  color: #555555 !important;
-  font-size: 0.88rem !important;
-  line-height: 1.4 !important;
-  margin-top: 4px !important;
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* CONTENEDOR MEDIA & SIN FOTO */
 .contenedor-media {
   width: 100%;
-  height: 180px;
+  height: 220px;
   overflow: hidden;
-  background: #f4f4f4;
+  background: #000;
   position: relative;
 }
 
@@ -235,6 +162,7 @@ h2.titulo-categoria,
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
   transition: transform 0.4s ease;
 }
 
@@ -248,17 +176,118 @@ h2.titulo-categoria,
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #0d505a;
 }
 
 .sin-foto::after {
   content: '🍣';
   font-size: 2.5rem;
-  opacity: 0.3;
+  opacity: 0.5;
 }
 
-/* =====================
-    CARRITO FLOTANTE
-===================== */
+/* ÁREA DE INFORMACIÓN (CONTENEDOR DE TEXTO) */
+.card-producto .info {
+  padding: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  text-align: left !important;
+  color: #ffffff !important;
+}
+
+/* TÍTULO DEL PRODUCTO */
+.card-producto .info .nombre {
+  font-family: 'truenoextrabold', sans-serif !important;
+  font-size: 1.4rem !important;
+  line-height: 1.2 !important;
+  margin-bottom: 12px !important;
+  color: #ffffff !important;
+  display: block !important;
+}
+
+/* DESCRIPCIÓN DEL PRODUCTO */
+.card-producto .info .descripcion {
+  font-family: 'truenolight', sans-serif !important;
+  font-size: 0.95rem !important;
+  line-height: 1.45 !important;
+  margin: 0 0 16px 0 !important;
+  color: #e0f2f1 !important;
+  display: block !important;
+}
+
+/* PRECIO DEL PRODUCTO */
+.card-producto .info .precio {
+  font-family: 'truenoregular', sans-serif !important;
+  font-size: 1.25rem !important;
+  font-weight: bold !important;
+  color: #ffffff !important;
+  margin-top: auto !important;
+  display: block !important;
+}
+
+/* PRODUCTO DESHABILITADO */
+.producto-deshabilitado {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.overlay-deshabilitado {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  z-index: 4;
+}
+
+/* ==========================================
+   5. TÍTULOS DE SECCIÓN Y BANNERS
+   ========================================== */
+.titulo-categoria,
+h2.titulo-categoria,
+.banner-categoria-grupo + h3,
+[class*="titulo-categoria"] {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(8px) !important;
+  color: #1a1a1a !important;
+  padding: 10px 18px !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--color-borde, #e0e0e0) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 20px 0 12px 0 !important;
+  position: relative !important;
+  z-index: 5 !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.banner-categoria-grupo {
+  width: 100%;
+  height: 140px;
+  margin-bottom: 15px;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+}
+
+.banner-categoria-grupo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ==========================================
+   6. CARRITO FLOTANTE Y PANEL
+   ========================================== */
 .btn-carrito-flotante {
   position: fixed;
   bottom: 110px;
@@ -300,7 +329,6 @@ h2.titulo-categoria,
   text-align: center;
 }
 
-/* PANEL DEL CARRITO */
 .carrito-panel {
   position: fixed;
   bottom: 0;
@@ -344,9 +372,9 @@ h2.titulo-categoria,
   border-bottom: 1px solid #f5f5f5;
 }
 
-/* =====================
-    MODALES Y OPCIONES
-===================== */
+/* ==========================================
+   7. MODALES Y OBSERVACIONES (CON SCROLL)
+   ========================================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -368,9 +396,35 @@ h2.titulo-categoria,
   border-radius: 20px;
   padding: 20px;
   position: relative;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-height: 85vh; /* Evita que el modal se corte en pantalla */
+  overflow-y: auto; /* Habilita el scroll interno */
   box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+#modal_comentario {
+  width: 100%;
+  height: 100px;
+  font-size: 18px;
+  padding: 15px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+#sugerencias_obs {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.cantidad-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 25px 0;
 }
 
 .selector-cantidad-modal {
@@ -404,7 +458,6 @@ h2.titulo-categoria,
   font-weight: 700;
 }
 
-/* INTERACCIÓN EN ACOMPAÑAMIENTOS */
 .item-acomp {
   display: flex;
   align-items: center;
@@ -418,9 +471,7 @@ h2.titulo-categoria,
   transition: all 0.2s ease;
 }
 
-.item-acomp:hover {
-  background: #f1f1f1;
-}
+.item-acomp:hover { background: #f1f1f1; }
 
 .item-acomp:has(input:checked) {
   background: #f0fdf4;
@@ -436,7 +487,9 @@ h2.titulo-categoria,
   cursor: pointer;
 }
 
-/* PORTADA */
+/* ==========================================
+   8. PORTADA RESTAURANTE
+   ========================================== */
 .seccion-portada {
   background: var(--color-card);
   border-bottom: 1px solid var(--color-borde);
@@ -539,26 +592,9 @@ h2.titulo-categoria,
   }
 }
 
-/* BANNERS DE CATEGORÍA Y TITULOS */
-.banner-categoria-grupo {
-  width: 100%;
-  height: 140px;
-  margin-bottom: 15px;
-  border-radius: 15px;
-  overflow: hidden;
-  border: 1px solid var(--color-borde);
-}
-
-.banner-categoria-grupo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-
-
-/* FOOTER */
+/* ==========================================
+   9. FOOTER Y OTROS COMPONENTES
+   ========================================== */
 .footer-menwapp {
   margin-top: 60px;
   padding: 35px 20px;
@@ -595,7 +631,6 @@ h2.titulo-categoria,
 .footer-menwapp .btn-whatsapp-footer:hover { transform: scale(1.05); }
 .footer-menwapp .copyright { margin-top: 20px; font-size: 0.8rem; color: #90a4ae; }
 
-/* UTILIDADES Y BOTONES DE MODAL */
 .btn-agregar-modal {
   width: 100%;
   padding: 14px;
@@ -640,7 +675,6 @@ h2.titulo-categoria,
   pointer-events: none;
 }
 
-/* SIDEBAR Y MENÚ FLOTANTE */
 .sidebar {
   position: fixed;
   top: 0;
