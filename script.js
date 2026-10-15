@@ -206,7 +206,7 @@ function abrirModalProducto(p) {
             }
         });
     }
-}
+
 
     // --- SECCIÓN: ADICIONALES ---
     if (adicionalesConfig?.productos?.[cod]) {
@@ -1298,6 +1298,18 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
