@@ -5,22 +5,22 @@
    ========================================== */
 @font-face {
   font-family: 'truenoregular';
-  src: url('https://www.hipermarfish.com/fonts/truenorg_1-webfont.woff2') format('woff2'),
-       url('https://www.hipermarfish.com/fonts/truenorg_1-webfont.woff') format('woff');
+  src: url('https://wasabi.menwapp.com/truenorg_1-webfont.woff2') format('woff2'),
+       url('https://wasabi.menwapp.com/truenorg_1-webfont.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'truenoextrabold';
-  src: url('https://www.hipermarfish.com/fonts/truenoexbd_1-webfont.woff2') format('woff2'),
-       url('https://www.hipermarfish.com/fonts/truenoexbd_1-webfont.woff') format('woff');
+  src: url('https://wasabi.menwapp.com/truenoexbd_1-webfont.woff2') format('woff2'),
+       url('https://wasabi.menwapp.com/truenoexbd_1-webfont.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'truenolight';
-  src: url('https://www.hipermarfish.com/fonts/truenolt-webfont.woff2') format('woff2'),
-       url('https://www.hipermarfish.com/fonts/truenolt-webfont.woff') format('woff');
+  src: url('https://wasabi.menwapp.com/truenolt-webfont.woff2') format('woff2'),
+       url('https://wasabi.menwapp.com/truenolt-webfont.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
