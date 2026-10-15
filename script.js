@@ -1208,43 +1208,43 @@ function eliminarDelCarrito(i) {
 }
 
 function filtrarProductos(texto) {
-    const normalizar = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    const normalizar = str => str ? str.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
     const query = normalizar(texto);
     
     const btnLimpiar = document.getElementById("btn-limpiar-busqueda");
     if (btnLimpiar) btnLimpiar.style.display = query.length > 0 ? "block" : "none";
 
-    // Si el buscador está vacío, restauramos la vista normal por categorías
+    // Si el buscador está vacío, restauramos la vista por categoría activa o inicial
     if (query === "") {
         document.querySelectorAll(".bloque-categoria").forEach(el => {
-            // Respeta la categoría activa o inicial
             el.style.display = (el.id === "cat-recomendados" || el.id.includes(window.categoriaInicial)) ? "block" : "none";
         });
+        document.querySelectorAll(".card-producto").forEach(card => card.style.display = "flex");
         return;
     }
 
-    // Ocultamos todas las categorías y mostramos todas las tarjetas para filtrar
-    document.querySelectorAll(".bloque-categoria").forEach(el => el.style.display = "block");
-
+    // Ocultamos/mostramos tarjetas según la coincidencia en nombre o descripción
     const tarjetas = document.querySelectorAll(".card-producto");
-    let encontrados = 0;
 
     tarjetas.forEach(card => {
-        const nombre = normalizar(card.querySelector(".nombre")?.innerText);
-        const descripcion = normalizar(card.querySelector(".descripcion")?.innerText);
+        const elemNombre = card.querySelector(".nombre");
+        const elemDesc = card.querySelector(".descripcion");
 
-        if (nombre.includes(query) || descripcion.includes(query)) {
+        const nombre = elemNombre ? normalizar(elemNombre.innerText) : "";
+        const descripcion = elemDesc ? normalizar(elemDesc.innerText) : "";
+
+        // Verificamos coincidencia segura
+        if ((nombre && nombre.includes(query)) || (descripcion && descripcion.includes(query))) {
             card.style.display = "flex";
-            encontrados++;
         } else {
             card.style.display = "none";
         }
     });
 
-    // Ocultar títulos de categoría vacíos durante la búsqueda
+    // Muestra solo los bloques de categoría que tengan al menos 1 producto visible
     document.querySelectorAll(".bloque-categoria").forEach(bloque => {
-        const visiblesEnBloque = bloque.querySelectorAll('.card-producto[style*="display: flex"]').length;
-        bloque.style.display = visiblesEnBloque > 0 ? "block" : "none";
+        const tarjetasVisibles = Array.from(bloque.querySelectorAll(".card-producto")).filter(c => c.style.display !== "none");
+        bloque.style.display = tarjetasVisibles.length > 0 ? "block" : "none";
     });
 }
 
