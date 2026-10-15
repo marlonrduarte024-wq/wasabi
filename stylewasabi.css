@@ -284,7 +284,7 @@ h2.titulo-categoria,
 }
 
 /* ==========================================
-   6. CARRITO FLOTANTE Y PANEL REDISEÑADO
+   6. CARRITO FLOTANTE Y PANEL
    ========================================== */
 .btn-carrito-flotante {
   position: fixed;
@@ -454,7 +454,7 @@ h2.titulo-categoria,
   margin: 0 0 16px 0;
 }
 
-/* CONTADOR DE CANTIDAD ESTILIZADO */
+/* CONTADOR DE CANTIDAD */
 .cantidad-box,
 .selector-cantidad-modal {
   display: inline-flex;
@@ -534,7 +534,6 @@ h2.titulo-categoria,
   padding: 4px;
 }
 
-/* CHIPS DE SUGERENCIAS */
 #sugerencias_obs button,
 #sugerencias_obs .chip-obs {
   background: #f0f4f8;
@@ -555,7 +554,6 @@ h2.titulo-categoria,
   border-color: var(--color-principal);
 }
 
-/* BOTONES DE ACCIÓN */
 .btn-agregar,
 .btn-agregar-modal {
   width: 100%;
@@ -622,7 +620,6 @@ h2.titulo-categoria,
   transform: scale(1.08);
 }
 
-/* ACOMPAÑAMIENTOS */
 .item-acomp {
   display: flex;
   align-items: center;
@@ -655,10 +652,122 @@ h2.titulo-categoria,
 }
 
 /* ==========================================
-   8. PORTADA RESTAURANTE
+   8. PORTADA Y LOGO REDISEÑADOS
    ========================================== */
+.seccion-portada {
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-borde);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.banner-principal {
+  width: 100%;
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  background-color: #222;
+}
+
+@media (min-width: 768px) {
+  .banner-principal { height: 260px; }
+}
+
+.portada-info-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 20px 20px 20px;
+  gap: 15px;
+  min-height: 80px;
+  position: relative;
+}
+
+.logo-restaurante {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #ffffff;
+  background: #ffffff;
+  object-fit: cover;
+  margin-top: -35px;
+  z-index: 10;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+  transition: transform 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .logo-restaurante {
+    width: 170px;
+    height: 170px;
+    margin-top: -50px;
+    border-width: 6px;
+  }
+}
+
+.logo-restaurante:hover { 
+  transform: scale(1.05); 
+}
+
+.portada-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  width: 100%;
+  max-width: 500px;
+  margin: 10px auto 0 auto;
+  background: rgba(248, 249, 250, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  border: 1px solid var(--color-borde);
+}
+
+.btn-accion-portada {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #dcdcdc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-accion-portada:hover {
+  background: var(--color-principal);
+  color: #0d1b2a;
+  border-color: var(--color-principal);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 500px) {
+  .portada-info-bar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .portada-acciones {
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 10px;
+  }
+  .logo-restaurante {
+    margin-top: -45px;
+    margin-bottom: 5px;
+  }
+}
+
 /* ==========================================
-   10. BUSCADOR DE PRODUCTOS
+   9. BUSCADOR DE PRODUCTOS
    ========================================== */
 .buscador-container {
   position: relative;
@@ -720,103 +829,7 @@ h2.titulo-categoria,
 }
 
 /* ==========================================
-   11. MEJORA VISUAL DE LA PORTADA Y LOGO
-   ========================================== */
-.seccion-portada {
-  background: #ffffff;
-  border-bottom: 1px solid var(--color-borde);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-}
-
-.logo-restaurante {
-  border: 4px solid #ffffff;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
-  background: #ffffff;
-}
-
-/* Estilo unificado para los botones de contacto rápidos debajo del logo */
-.portada-acciones {
-  background: rgba(248, 249, 250, 0.8);
-  backdrop-filter: blur(8px);
-  border-radius: 16px;
-  padding: 10px;
-  border: 1px solid var(--color-borde);
-  margin-top: 10px;
-}
-
-.btn-accion-portada {
-  background: #ffffff;
-  color: #1a1a1a;
-  border: 1px solid #dcdcdc;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  font-weight: 600;
-  border-radius: 10px;
-  padding: 10px 12px;
-  transition: all 0.2s ease;
-}
-
-.btn-accion-portada:hover {
-  background: var(--color-principal);
-  color: #0d1b2a;
-  border-color: var(--color-principal);
-  transform: translateY(-2px);
-}
-
-.banner-principal {
-  width: 100%;
-  height: 180px;
-  background-size: cover;
-  background-position: center;
-  background-color: #222;
-}
-
-@media (min-width: 768px) {
-  .banner-principal { height: 260px; }
-}
-
-.portada-info-bar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 0 20px 20px 20px;
-  gap: 15px;
-  min-height: 80px;
-  position: relative;
-}
-
-
-@media (min-width: 768px) {
-  .logo-restaurante {
-    width: 170px;
-    height: 170px;
-    margin-top: -50px;
-    border-width: 6px;
-  }
-}
-
-.logo-restaurante:hover { transform: scale(1.05); }
-
-.portada-acciones {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  padding: 15px;
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-
-@media (max-width: 500px) {
-  .portada-info-bar {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-
-/* ==========================================
-   9. FOOTER, SIDEBAR Y NOTIFICACIONES
+   10. FOOTER, SIDEBAR Y NOTIFICACIONES
    ========================================== */
 .footer-menwapp {
   margin-top: 60px;
