@@ -1207,6 +1207,55 @@ function eliminarDelCarrito(i) {
     actualizarVistaCarrito();
 }
 
+function filtrarProductos(texto) {
+    const normalizar = str => str?.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    const query = normalizar(texto);
+    
+    const btnLimpiar = document.getElementById("btn-limpiar-busqueda");
+    if (btnLimpiar) btnLimpiar.style.display = query.length > 0 ? "block" : "none";
+
+    // Si el buscador está vacío, restauramos la vista normal por categorías
+    if (query === "") {
+        document.querySelectorAll(".bloque-categoria").forEach(el => {
+            // Respeta la categoría activa o inicial
+            el.style.display = (el.id === "cat-recomendados" || el.id.includes(window.categoriaInicial)) ? "block" : "none";
+        });
+        return;
+    }
+
+    // Ocultamos todas las categorías y mostramos todas las tarjetas para filtrar
+    document.querySelectorAll(".bloque-categoria").forEach(el => el.style.display = "block");
+
+    const tarjetas = document.querySelectorAll(".card-producto");
+    let encontrados = 0;
+
+    tarjetas.forEach(card => {
+        const nombre = normalizar(card.querySelector(".nombre")?.innerText);
+        const descripcion = normalizar(card.querySelector(".descripcion")?.innerText);
+
+        if (nombre.includes(query) || descripcion.includes(query)) {
+            card.style.display = "flex";
+            encontrados++;
+        } else {
+            card.style.display = "none";
+        }
+    });
+
+    // Ocultar títulos de categoría vacíos durante la búsqueda
+    document.querySelectorAll(".bloque-categoria").forEach(bloque => {
+        const visiblesEnBloque = bloque.querySelectorAll('.card-producto[style*="display: flex"]').length;
+        bloque.style.display = visiblesEnBloque > 0 ? "block" : "none";
+    });
+}
+
+function limpiarBusqueda() {
+    const input = document.getElementById("input-buscador");
+    if (input) {
+        input.value = "";
+        filtrarProductos("");
+    }
+}
+
 window.onpopstate = function() {
     document.getElementById("modal-producto")?.classList.remove("activo");
     document.getElementById("carrito-panel")?.classList.remove("activo");
