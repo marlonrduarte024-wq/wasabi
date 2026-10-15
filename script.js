@@ -156,13 +156,12 @@ function abrirModalProducto(p) {
         imgModal.src = limpiarRuta(rutaImg);
         imgModal.style.display = "block";
         imgModal.style.cursor = "zoom-in"; // Indica que se puede ampliar
-        imgModal.onclick = () => abrirVisorImagen(limpiarRuta(rutaImg)); // Abre la imagen completa
+        imgModal.onclick = () => abrirVisorImagen(limpiarRuta(rutaImg)); // ✅ Nombre corregido correctamente
     } else {
         imgModal.src = "";
         imgModal.style.display = "none";
         imgModal.onclick = null;
     }
-
     document.getElementById("modal-obs").value = "";
     document.getElementById("modal-cantidad").value = 1;
 
