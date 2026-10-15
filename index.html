@@ -14,11 +14,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=881330937559751&ev=PageView&noscript=1"/>
-  </noscript>
-  <!-- End Meta Pixel Code -->
 </head>
 <body>
 <!--<div style="background: #e65100; color: white; text-align: center; padding: 12px 15px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.15); position: relative; z-index: 9999;">
@@ -52,7 +47,11 @@
     </div>
   </div>
 </header>
-
+<div class="buscador-container">
+  <span class="buscador-icono">🔍</span>
+  <input type="text" id="input-buscador" placeholder="Busca tu roll, bebida o plato favorito..." oninput="filtrarProductos(this.value)">
+  <button id="btn-limpiar-busqueda" onclick="limpiarBusqueda()" style="display:none;">✕</button>
+</div>
 <div class="contenedor-flotante-menu">
     <button onclick="toggleCategorias()" class="btn-menu-lateral">
        ☰ Categorías
