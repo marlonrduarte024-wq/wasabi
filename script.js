@@ -151,8 +151,17 @@ function abrirModalProducto(p) {
     
     const imgModal = document.getElementById("modal-img");
     const rutaImg = imagenes[cod] || p.imagen;
-    imgModal.src = rutaImg ? limpiarRuta(rutaImg) : "";
-    imgModal.style.display = rutaImg ? "block" : "none";
+    
+    if (rutaImg) {
+        imgModal.src = limpiarRuta(rutaImg);
+        imgModal.style.display = "block";
+        imgModal.style.cursor = "zoom-in"; // Indica que se puede ampliar
+        imgModal.onclick = () => abrirVisorImagen(limpiarRuta(rutaImg)); // Abre la imagen completa
+    } else {
+        imgModal.src = "";
+        imgModal.style.display = "none";
+        imgModal.onclick = null;
+    }
 
     document.getElementById("modal-obs").value = "";
     document.getElementById("modal-cantidad").value = 1;
@@ -1253,6 +1262,31 @@ function limpiarBusqueda() {
     if (input) {
         input.value = "";
         filtrarProductos("");
+    }
+}
+function abririsorImagen(url) {
+    // Revisa si ya existe el visor en el DOM, si no, lo crea dinámicamente
+    let visor = document.getElementById("visor-imagen-completa");
+    if (!visor) {
+        visor = document.createElement("div");
+        visor.id = "visor-imagen-completa";
+        visor.innerHTML = `
+            <div style="position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;" onclick="cerrarVisorImagen()">
+                <span style="position:absolute; top:20px; right:25px; color:#fff; font-size:35px; cursor:pointer; font-weight:bold;">&times;</span>
+                <img id="img-ampliada" style="max-width:100%; max-height:90vh; object-fit:contain; border-radius:8px; box-shadow:0 5px 25px rgba(0,0,0,0.5);">
+            </div>
+        `;
+        document.body.appendChild(visor);
+    }
+    
+    document.getElementById("img-ampliada").src = url;
+    visor.style.display = "flex";
+}
+
+function cerrarVisorImagen() {
+    const visor = document.getElementById("visor-imagen-completa");
+    if (visor) {
+        visor.style.display = "none";
     }
 }
 
