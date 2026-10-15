@@ -156,7 +156,7 @@ function abrirModalProducto(p) {
         imgModal.src = limpiarRuta(rutaImg);
         imgModal.style.display = "block";
         imgModal.style.cursor = "zoom-in"; // Indica que se puede ampliar
-        imgModal.onclick = () => abrirVisorImagen(limpiarRuta(rutaImg)); // ✅ Nombre corregido correctamente
+        imgModal.onclick = () => abrirVisorImagen(limpiarRuta(rutaImg)); // ✅ Llamada correcta al visor
     } else {
         imgModal.src = "";
         imgModal.style.display = "none";
@@ -206,6 +206,7 @@ function abrirModalProducto(p) {
             }
         });
     }
+}
 
     // --- SECCIÓN: ADICIONALES ---
     if (adicionalesConfig?.productos?.[cod]) {
@@ -1297,18 +1298,6 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
