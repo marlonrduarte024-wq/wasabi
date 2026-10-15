@@ -153,10 +153,28 @@ function abrirModalProducto(p) {
     const rutaImg = imagenes[cod] || p.imagen;
     
     if (rutaImg) {
-        imgModal.src = limpiarRuta(rutaImg);
+        const urlLimpia = limpiarRuta(rutaImg);
+        imgModal.src = urlLimpia;
         imgModal.style.display = "block";
-        imgModal.style.cursor = "zoom-in"; // Indica que se puede ampliar
-        imgModal.onclick = () => abrirVisorImagen(limpiarRuta(rutaImg)); // ✅ Llamada correcta al visor
+        imgModal.style.cursor = "zoom-in";
+        
+        // Creamos la acción de apertura directamente sin buscar funciones externas
+        imgModal.onclick = () => {
+            let visor = document.getElementById("visor-imagen-completa");
+            if (!visor) {
+                visor = document.createElement("div");
+                visor.id = "visor-imagen-completa";
+                visor.innerHTML = `
+                    <div style="position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;" onclick="this.parentElement.style.display='none'">
+                        <span style="position:absolute; top:20px; right:25px; color:#fff; font-size:35px; cursor:pointer; font-weight:bold;">&times;</span>
+                        <img id="img-ampliada" style="max-width:100%; max-height:90vh; object-fit:contain; border-radius:8px; box-shadow:0 5px 25px rgba(0,0,0,0.5);">
+                    </div>
+                `;
+                document.body.appendChild(visor);
+            }
+            document.getElementById("img-ampliada").src = urlLimpia;
+            visor.style.display = "flex";
+        };
     } else {
         imgModal.src = "";
         imgModal.style.display = "none";
@@ -1298,6 +1316,13 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
+
+
+
+
+
+
 
 
 
