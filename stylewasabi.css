@@ -657,10 +657,109 @@ h2.titulo-categoria,
 /* ==========================================
    8. PORTADA RESTAURANTE
    ========================================== */
-.seccion-portada {
-  background: var(--color-card);
-  border-bottom: 1px solid var(--color-borde);
+/* ==========================================
+   10. BUSCADOR DE PRODUCTOS
+   ========================================== */
+.buscador-container {
   position: relative;
+  max-width: 600px;
+  margin: 20px auto 10px auto;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+}
+
+.buscador-container .buscador-icono {
+  position: absolute;
+  left: 28px;
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+#input-buscador {
+  width: 100%;
+  padding: 14px 45px 14px 45px;
+  background: #f8f9fa;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 50px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-texto);
+  outline: none;
+  box-shadow: var(--sombra-suave);
+  transition: all 0.3s ease;
+}
+
+#input-buscador:focus {
+  background: #ffffff;
+  border-color: var(--color-principal);
+  box-shadow: 0 6px 20px rgba(99, 179, 46, 0.2);
+}
+
+#btn-limpiar-busqueda {
+  position: absolute;
+  right: 28px;
+  background: #e2e8f0;
+  border: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a5568;
+  transition: background 0.2s;
+}
+
+#btn-limpiar-busqueda:hover {
+  background: var(--color-secundario);
+  color: #ffffff;
+}
+
+/* ==========================================
+   11. MEJORA VISUAL DE LA PORTADA Y LOGO
+   ========================================== */
+.seccion-portada {
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-borde);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.logo-restaurante {
+  border: 4px solid #ffffff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+  background: #ffffff;
+}
+
+/* Estilo unificado para los botones de contacto rápidos debajo del logo */
+.portada-acciones {
+  background: rgba(248, 249, 250, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 10px;
+  border: 1px solid var(--color-borde);
+  margin-top: 10px;
+}
+
+.btn-accion-portada {
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #dcdcdc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: all 0.2s ease;
+}
+
+.btn-accion-portada:hover {
+  background: var(--color-principal);
+  color: #0d1b2a;
+  border-color: var(--color-principal);
+  transform: translateY(-2px);
 }
 
 .banner-principal {
@@ -685,18 +784,6 @@ h2.titulo-categoria,
   position: relative;
 }
 
-.logo-restaurante {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 5px solid var(--color-principal);
-  background: #fff;
-  object-fit: cover;
-  margin-top: -35px;
-  z-index: 10;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.5);
-  transition: transform 0.3s ease;
-}
 
 @media (min-width: 768px) {
   .logo-restaurante {
@@ -719,28 +806,6 @@ h2.titulo-categoria,
   margin: 0 auto;
 }
 
-.btn-accion-portada {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  background: #222;
-  color: white;
-  border: 1px solid var(--color-principal);
-  padding: 10px 5px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.btn-accion-portada:hover {
-  background: var(--color-principal);
-  color: #000;
-}
 
 @media (max-width: 500px) {
   .portada-info-bar {
@@ -748,16 +813,7 @@ h2.titulo-categoria,
     align-items: center;
     text-align: center;
   }
-  .portada-acciones {
-    justify-content: center;
-    width: 100%;
-    padding-bottom: 5px;
-  }
-  .logo-restaurante {
-    margin-top: -45px;
-    margin-bottom: 5px;
-  }
-}
+
 
 /* ==========================================
    9. FOOTER, SIDEBAR Y NOTIFICACIONES
