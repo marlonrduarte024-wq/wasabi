@@ -56,7 +56,7 @@ async function inicializarApp() {
     console.log("🚀 Iniciando MenWapp (Wasabi)...");
 
     try {
-        // Carga en paralelo de los 9 archivos con sus nombres originales
+        // Carga en paralelo de los archivos con sus nombres originales
         const resultados = await Promise.all([
             cargarArchivo('menu.json'),
             cargarArchivo('menu_config.json'),
@@ -72,7 +72,6 @@ async function inicializarApp() {
         const [mRaw, cfg, desc, img, prm, sug, acmp, adic, grupoPrincipal] = resultados;
 
         // --- VALIDACIÓN FUNDAMENTAL ---
-        // Únicamente exige que menu.json se haya obtenido de alguna de las 2 fuentes
         if (!mRaw || !mRaw.menu) {
             throw new Error("No se pudo obtener el menú principal de ninguna ubicación.");
         }
@@ -118,22 +117,14 @@ async function inicializarApp() {
         }
 
     } catch (error) {
-        console.error("Error crítico de inicialización (Ambas rutas fallaron):", error);
+        console.error("Error crítico de inicialización:", error);
         
-        // --- MENSAJE AUTOMÁTICO SI FALLAN AMBAS RUTAS EN CARGAR EL MENU PRINCIPAL ---
+        // --- MENSAJE DE ERROR LIMPIO CON EL GIF DE SUSHI ---
         document.body.innerHTML = `
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center; padding:20px; font-family: 'Poppins', sans-serif; background: #fff;">
-            <h1 style="font-size: 4rem;">🍔</h1>
-            <h2 style="color: #333; margin: 20px 0;">En estos momentos no tenemos servicio🍔🍔🍔:</h2>
-            
-            <div style="width: 100%; max-width: 800px; height: 600px; border: 2px solid #333; border-radius: 10px; overflow: hidden; background: #eee;">
-                <iframe 
-                    src="https://drive.google.com/file/d/1DMvgJ03AbKH13kdNR-z5xib-VpB3c7wG/preview" 
-                    width="100%" 
-                    height="100%" 
-                    frameborder="0">
-                </iframe>
-            </div>
+            <img src="https://wasabi.menwapp.com/imagenes/wasabi_sushi.gif" alt="Wasabi Sushi" style="width: 120px; height: 120px; object-fit: contain; margin-bottom: 20px;">
+            <h1 style="font-size: 2.5rem; color: #0d1b2a; margin: 0 0 10px 0;">¡Lo sentimos!</h1>
+            <h2 style="color: #666; font-size: 1.2rem; font-weight: normal; margin: 0; max-width: 400px;">En estos momentos no tenemos servicio disponible. Por favor, intenta recargar la página en unos minutos. 🍣</h2>
         </div>
         `;
     }
@@ -1316,6 +1307,13 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
+
+
+
+
+
+
 
 
 
