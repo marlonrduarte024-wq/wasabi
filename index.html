@@ -14,6 +14,42 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <style>
+    /* Estilos para el banner publicitario */
+    .banner-publicitario {
+      background: #fff;
+      margin: 15px auto;
+      padding: 15px;
+      max-width: 600px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border: 1px solid #eaeaea;
+    }
+    .banner-publicitario img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .btn-embajador {
+      display: inline-block;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .btn-embajador:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    }
+  </style>
 </head>
 <body>
 <!--<div style="background: #e65100; color: white; text-align: center; padding: 12px 15px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.15); position: relative; z-index: 9999;">
@@ -41,12 +77,25 @@
         </button>
 
        <!-- <button onclick="abrirModalReserva()" class="btn-accion-portada" style="background: #2563eb; color: white; border: none;">
-           📅 Reservas
+            📅 Reservas
         </button> -->
       </div>
     </div>
   </div>
 </header>
+
+<!-- ESPACIO PUBLICITARIO -->
+<div class="container">
+  <div class="banner-publicitario">
+    <img src="https://wasabi.menwapp.com/imagenes/wasabi.png" alt="Publicidad Wasabi">
+    <div>
+      <a href="https://lp.loyaltycardtools.com/nC1rmSiJzV" target="_blank" class="btn-embajador">
+        ✨ Convertirme en embajador
+      </a>
+    </div>
+  </div>
+</div>
+
 <div class="buscador-container">
   <span class="buscador-icono">🔍</span>
   <input type="text" id="input-buscador" placeholder="Busca tu roll, bebida o plato favorito..." oninput="filtrarProductos(this.value)">
@@ -54,7 +103,7 @@
 </div>
 <div class="contenedor-flotante-menu">
     <button onclick="toggleCategorias()" class="btn-menu-lateral">
-       ☰ Categorías
+        ☰ Categorías
     </button>
 </div>
 
@@ -135,7 +184,7 @@
    href="https://wa.me/573152653104?text=hola,%20tengo%20un%20restaurante%20y%20quiero%20sistematizar%20mi%20negocio" 
    target="_blank" 
    style="display:inline-block; margin-top:10px; text-decoration:none; background:#25D366; color:white; padding:8px 15px; border-radius:20px; font-size:0.85rem; font-weight:600;">
-   📲 Información sobre el sistema
+    📲 Información sobre el sistema
 </a>
   </div>
   
@@ -215,7 +264,7 @@ try {
           btn.disabled = false;
           btn.innerText = "Enviar Solicitud";
       }
-  } // <--- ESTA LLAVE FALTABA
+  } 
 </script>
 
 <!-- MODAL DE CONFIRMACIÓN WHATSAPP -->
