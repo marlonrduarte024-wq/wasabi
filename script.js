@@ -917,6 +917,15 @@ document.addEventListener("DOMContentLoaded", () => {
 // ============================================================
 // SISTEMA BASE (RENDER, PORTADA, HORARIO)
 // ============================================================
+function toggleCategorias() {
+    const sidebar = document.getElementById("sidebar-categorias");
+    const overlay = document.getElementById("overlay-sidebar");
+    if(sidebar && overlay) {
+        sidebar.classList.toggle("activo");
+        overlay.classList.toggle("activo");
+    }
+}
+
 function renderMenu() {
     const menuCont = document.getElementById("menu");
     const navCont = document.getElementById("nav-categorias");
