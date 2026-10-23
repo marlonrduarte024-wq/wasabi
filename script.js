@@ -69,16 +69,23 @@ async function inicializarApp() {
             cargarArchivo('grupo1.json')
         ]);
 
-        const [mRaw, cfg, desc, img, prm, sug, acmp, adic, grupoPrincipal] = resultados;
+        const [mRaw, cfg, desc, img, prm, sug, acmp, adic, grupoConfig] = resultados;
 
         // --- VALIDACIÓN FUNDAMENTAL ---
         if (!mRaw || !mRaw.menu) {
             throw new Error("No se pudo obtener el menú principal de ninguna ubicación.");
         }
 
-        // Asignación de variables con valores por defecto si los JSONs opcionales no existen
+        // Asignación de variables con valores por defecto
         menuData = mRaw.menu;
-        window.categoriaInicial = grupoPrincipal?.nombre || Object.keys(menuData)[0];
+        
+        // Procesamos la nueva estructura de grupo1.json
+        // Guardamos globalmente el orden y los grupos especiales para usarlos en el renderizado
+        window.ordenGruposPersonalizado = grupoConfig?.orden_grupos || Object.keys(menuData);
+        window.gruposEspecialesConfig = grupoConfig?.grupos_especiales || [];
+        
+        // Categoría inicial por defecto (el primer grupo del orden personalizado o el primero del menú)
+        window.categoriaInicial = window.ordenGruposPersonalizado[0] || Object.keys(menuData)[0];
         
         menuConfig = cfg || { horarios: {}, portada: {}, recomendados: [] };
         descripciones = desc || {};
@@ -910,15 +917,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // ============================================================
 // SISTEMA BASE (RENDER, PORTADA, HORARIO)
 // ============================================================
-function toggleCategorias() {
-    const sidebar = document.getElementById("sidebar-categorias");
-    const overlay = document.getElementById("overlay-sidebar");
-    if(sidebar && overlay) {
-        sidebar.classList.toggle("activo");
-        overlay.classList.toggle("activo");
-    }
-}
-
 function renderMenu() {
     const menuCont = document.getElementById("menu");
     const navCont = document.getElementById("nav-categorias");
@@ -934,7 +932,16 @@ function renderMenu() {
     const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
     const hoy = normalizar(diasSemana[new Date().getDay()]);
 
-    const categorias = Object.keys(menuData);
+    // ⭐ USAR EL ORDEN PERSONALIZADO DE GRUPO1.JSON (con respaldo por si hay categorías nuevas)
+    let categorias = window.ordenGruposPersonalizado || Object.keys(menuData);
+    Object.keys(menuData).forEach(cat => {
+        if (!categorias.includes(cat)) {
+            categorias.push(cat);
+        }
+    });
+
+    // Grupos especiales cargados desde grupo1.json
+    const gruposEspeciales = window.gruposEspecialesConfig || [];
 
     // =========================
     // ⭐ RECOMENDADOS (VISIBLE AL INICIO)
@@ -945,6 +952,7 @@ function renderMenu() {
         let hayRecomendados = false;
 
         categorias.forEach(cat => {
+            if (!menuData[cat]) return; // Evitar error si una categoría del orden no existe en el menú
             menuData[cat].forEach(p => {
                 const cod = String(p.codigo).trim();
                 const diasOriginal = menuConfig.recomendados[cod];
@@ -955,7 +963,6 @@ function renderMenu() {
                     hayRecomendados = true;
 
                     const img = imagenes[cod] || p.imagen;
-                    // ✅ Naballigi a pannakakilala ti deskripsion babaen ti descripciones[cod]
                     const desc = (typeof descripciones !== 'undefined' && descripciones[cod]) || p.descripcion || "";
 
                     htmlChef += `
@@ -978,7 +985,7 @@ function renderMenu() {
         if (hayRecomendados) {
             // BOTÓN NAV
             const btnChef = document.createElement("button");
-            btnChef.innerText = "⭐ Recomendados";
+            btnChef.innerHTML = "⭐ Recomendados";
 
             btnChef.onclick = (e) => {
                 document.querySelectorAll("#nav-categorias button").forEach(b => b.classList.remove("activo"));
@@ -1001,15 +1008,22 @@ function renderMenu() {
     }
 
     // =========================
-    // 📂 CATEGORÍAS
+    // 📂 CATEGORÍAS (ORDENADAS Y CON DESTACADOS)
     // =========================
     categorias.forEach((cat) => {
+        if (!menuData[cat]) return; // Si la categoría no tiene productos o no existe en el menú, saltarla
 
         const esInicial = (cat === window.categoriaInicial);
+        const esEspecial = gruposEspeciales.includes(cat);
 
         // BOTÓN NAV
         const btn = document.createElement("button");
-        btn.innerText = cat;
+        // Si es un grupo especial, le añadimos una estrella visual en el menú lateral
+        btn.innerHTML = esEspecial ? `⭐ ${cat}` : cat;
+
+        if (esEspecial) {
+            btn.classList.add("btn-grupo-especial"); // Clase opcional por si quieres darle estilos CSS propios
+        }
 
         if (esInicial) btn.classList.add("activo");
 
@@ -1024,7 +1038,7 @@ function renderMenu() {
 
         // BLOQUE
         const divCat = document.createElement("div");
-        divCat.className = "bloque-categoria";
+        divCat.className = esEspecial ? "bloque-categoria bloque-especial" : "bloque-categoria";
         divCat.id = "cat-" + normalizar(cat).replace(/\s+/g, "");
 
         divCat.style.display = esInicial ? "block" : "none";
@@ -1036,7 +1050,9 @@ function renderMenu() {
             html += `<div class="banner-categoria-grupo"><img src="${limpiarRuta(banner)}"></div>`;
         }
 
-        html += `<h3 class="titulo-categoria">${cat}</h3><div class="grid-productos">`;
+        // Título de la categoría (con estrella si es grupo especial para mayor visibilidad)
+        const tituloTexto = esEspecial ? `⭐ ${cat} ⭐` : cat;
+        html += `<h3 class="titulo-categoria ${esEspecial ? 'titulo-especial' : ''}">${tituloTexto}</h3><div class="grid-productos">`;
 
         menuData[cat].forEach(p => {
             const cod = String(p.codigo).trim();
@@ -1055,7 +1071,6 @@ function renderMenu() {
 
             const estaDeshabilitado = esRecomendadoGeneral && !esRecHoy;
 
-            // ✅ Naballigi a pannakakilala ti deskripsion babaen ti descripciones[cod]
             const desc = (typeof descripciones !== 'undefined' && descripciones[cod]) || p.descripcion || "";
 
             html += `
@@ -1307,6 +1322,11 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
+
+
+
+
 
 
 
