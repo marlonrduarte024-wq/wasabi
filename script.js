@@ -1,5 +1,10 @@
 
 
+
+
+
+
+
 // ============================================================
 // ESTADO GLOBAL
 // ============================================================
@@ -47,6 +52,79 @@ async function cargarArchivo(nombreArchivo) {
     }
 
     return null; // Si no existe en ningún lado, retorna null sin romper Promise.all
+}
+
+
+// ============================================================
+// PRECARGA DE IMÁGENES
+// ============================================================
+async function precargarImagenesMenu(urlsImagenes, logoUrl) {
+    const loader = document.getElementById("loader");
+    const progressBar = document.getElementById("progress-bar");
+    const progressText = document.getElementById("progress-text");
+    const loaderLogoImg = document.getElementById("loader-logo-img");
+
+    // Asignar el logo a la pantalla de carga si existe
+    if (loaderLogoImg && logoUrl) {
+        loaderLogoImg.src = logoUrl;
+    }
+
+    // Filtrar URLs válidas excluyendo valores nulos o vacíos
+    const urls = urlsImagenes.filter(url => 
+        url && typeof url === 'string' && url.trim().startsWith('http')
+    );
+
+    const total = urls.length;
+    if (total === 0) {
+        if (loader) loader.classList.add("hidden");
+        return;
+    }
+
+    let porcentajeReal = 0;
+    let porcentajeVisual = 0;
+
+    // Animación suave para evitar que el porcentaje salte bruscamente
+    const intervaloSuave = setInterval(() => {
+        if (porcentajeVisual < porcentajeReal) {
+            porcentajeVisual++;
+            if (progressBar) progressBar.style.width = `${porcentajeVisual}%`;
+            if (progressText) progressText.textContent = `Cargando menú... ${porcentajeVisual}%`;
+        }
+        if (porcentajeVisual >= 100) {
+            clearInterval(intervaloSuave);
+        }
+    }, 15);
+
+    let cargados = 0;
+    
+    // Procesar imágenes en lotes pequeños
+    const LIMITE = 8;
+    const cola = [...urls];
+
+    async function worker() {
+        while (cola.length > 0) {
+            const url = cola.shift();
+            await new Promise((resolve) => {
+                const img = new Image();
+                img.onload = img.onerror = resolve;
+                img.src = url;
+            });
+            cargados++;
+            porcentajeReal = Math.floor((cargados / total) * 100);
+        }
+    }
+
+    const trabajadores = Array.from({ length: Math.min(LIMITE, total) }, () => worker());
+    await Promise.all(trabajadores);
+
+    // Forzar que el porcentaje visual alcance el 100% antes de ocultar
+    porcentajeReal = 100;
+    await new Promise(res => setTimeout(res, 300));
+
+    // Ocultar pantalla de carga
+    if (loader) {
+        loader.classList.add("hidden");
+    }
 }
 
 // ============================================================
@@ -1331,6 +1409,7 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
 
 
 
