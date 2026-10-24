@@ -192,7 +192,7 @@ async function inicializarApp() {
         adicionalesConfig = adic || { grupos: {}, productos: {} };
 
         // --- RECURSOS FIJOS DE WASABI PARA PRECARGA ---
-        const urlLogo = "https://wasabi.menwapp.com/imagenes/wasabi.png";
+        //const urlLogo = "https://wasabi.menwapp.com/imagenes/wasabi_sushi.png";
         const urlBanner = menuConfig?.portada?.imagen || "https://wasabi.menwapp.com/imagenes/wasabi_sushi.gif";
 
         // Extraer todas las URLs de imágenes a precargar
@@ -1473,6 +1473,13 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
+
+
+
+
+
+
 
 
 
