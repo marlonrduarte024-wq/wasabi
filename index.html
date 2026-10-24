@@ -53,6 +53,114 @@
   </style>
 </head>
 <body>
+
+  <!-- ESTILOS PANTALLA DE CARGA -->
+  <style>
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loader-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      animation: bounce 1s infinite alternate;
+    }
+    .progress-container {
+      width: 260px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff4500, #ff8c00);
+      transition: width 0.15s ease-out;
+    }
+    .progress-text {
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+
+
+<!-- PANTALLA DE CARGA INICIAL CON LOGO INTEGRADO -->
+<div id="loader">
+  <div class="loader-logo-container">
+    <img id="loader-logo-img" 
+         src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>" 
+         alt="Distrito Logo" 
+         class="loader-logo-animado">
+  </div>
+  <div class="progress-container">
+    <div id="progress-bar" class="progress-bar-fill"></div>
+  </div>
+  <span id="progress-text" class="progress-text">Cargando menú... 0%</span>
+</div>
+
+<style>
+  #loader {
+    position: fixed;
+    inset: 0;
+    background-color: #07070a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+  }
+  #loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .loader-logo-container {
+    width: 90px;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .loader-logo-animado {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  .progress-container {
+    width: 220px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff4500, #ff8c00);
+    transition: width 0.05s linear;
+  }
+  .progress-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+</style>
 <!--<div style="background: #e65100; color: white; text-align: center; padding: 12px 15px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.15); position: relative; z-index: 9999;">
   📢 ATENCIÓN: Para brindarte un mejor servicio, Por hoy solo estaremos despachando la promo
 </div>  -->
@@ -315,3 +423,4 @@
 
 </body>
 </html>
+
