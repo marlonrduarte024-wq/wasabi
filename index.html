@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -231,6 +230,28 @@
         </div>
       </div>
       <button class="btn-agregar-modal" onclick="agregarDesdeModal()">Agregar al Pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN WHATSAPP -->
+<div id="modal-confirmacion" class="modal-overlay">
+  <div class="modal-box" style="text-align: center;">
+    <h3 style="color: #d32f2f; margin-bottom: 15px;">⚠️ ¡AVISO IMPORTANTE!</h3>
+    <p style="font-size: 0.95rem; line-height: 1.5; color: #333;">
+      En el siguiente paso se abrirá tu <strong>WhatsApp</strong> con un código de pedido generado automáticamente.
+    </p>
+    <div style="background: #fff3e0; padding: 10px; border-radius: 8px; margin: 15px 0; border: 1px solid #ffe0b2;">
+      <p style="font-weight: 700; margin: 0; color: #e65100;">❌ NO MODIFIQUES EL TEXTO</p>
+      <p style="font-size: 0.85rem; margin: 5px 0 0;">Si borras o cambias los códigos, no podremos procesar tu orden.</p>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button onclick="cerrarModalConfirmacion()" style="flex:1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #eee; cursor:pointer;">
+        Cancelar
+      </button>
+      <button onclick="confirmarYEnviar()" style="flex:1; padding: 12px; border-radius: 10px; border: none; background: #25D366; color: white; font-weight: 700; cursor:pointer;">
+        Entendido, enviar
+      </button>
     </div>
   </div>
 </div>
