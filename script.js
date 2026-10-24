@@ -1,5 +1,10 @@
 
 
+
+
+
+
+
 // ============================================================
 // ESTADO GLOBAL
 // ============================================================
@@ -1028,7 +1033,7 @@ function renderMenu() {
         // BOTÓN NAV
         const btn = document.createElement("button");
         // Si es un grupo especial, le añadimos una estrella visual en el menú lateral
-        btn.innerHTML = esEspecial ? `🚢 ${cat}` : cat;
+        btn.innerHTML = esEspecial ? `🚢 ${cat} 🚢` : cat;
 
         if (esEspecial) {
             btn.classList.add("btn-grupo-especial"); // Clase opcional por si quieres darle estilos CSS propios
@@ -1331,11 +1336,6 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
-
-
-
-
-
 
 
 
