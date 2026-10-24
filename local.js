@@ -1100,6 +1100,9 @@ function renderMenu() {
     categorias.forEach((cat) => {
         if (!menuData[cat]) return;
 
+        // 🚫 Omitir y no renderizar el grupo PROMOS
+        if (normalizar(cat).toUpperCase() === "PROMOS") return;
+
         const esInicial = (cat === window.categoriaInicial);
         const esEspecial = gruposEspeciales.includes(cat);
 
@@ -1145,7 +1148,6 @@ function renderMenu() {
             const img = imagenes[cod] || p.imagen;
             const diasConfigurados = menuConfig?.recomendados?.[cod];
 
-            // Si el arreglo de días está vacío explícitamente, se omite
             if (
                 diasConfigurados &&
                 Array.isArray(diasConfigurados) &&
@@ -1408,6 +1410,7 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
 
 
 
