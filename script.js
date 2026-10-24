@@ -178,7 +178,6 @@ async function inicializarApp() {
         menuData = mRaw.menu;
         
         // Procesamos la nueva estructura de grupo1.json
-        // Guardamos globalmente el orden y los grupos especiales para usarlos en el renderizado
         window.ordenGruposPersonalizado = grupoConfig?.orden_grupos || Object.keys(menuData);
         window.gruposEspecialesConfig = grupoConfig?.grupos_especiales || [];
         
@@ -192,9 +191,50 @@ async function inicializarApp() {
         acompanamientosConfig = acmp || { grupos: {}, productos: {} };
         adicionalesConfig = adic || { grupos: {}, productos: {} };
 
-        // Renderizado
+        // --- RECURSOS FIJOS DE WASABI PARA PRECARGA ---
+        const urlLogo = "https://wasabi.menwapp.com/imagenes/wasabi.png";
+        const urlBanner = menuConfig?.portada?.imagen || "https://wasabi.menwapp.com/imagenes/wasabi_sushi.gif";
+
+        // Extraer todas las URLs de imágenes a precargar
+        const listaUrls = [];
+        if (urlLogo) listaUrls.push(urlLogo);
+        if (urlBanner) listaUrls.push(urlBanner);
+
+        // URLs del JSON de imágenes
+        if (typeof imagenes === 'object' && imagenes !== null) {
+            Object.values(imagenes).forEach(val => {
+                if (typeof val === 'string') listaUrls.push(val);
+                else if (val && typeof val === 'object' && val.url) listaUrls.push(val.url);
+            });
+        }
+
+        // URLs del menú principal
+        if (typeof menuData === 'object' && menuData !== null) {
+            Object.values(menuData).forEach(categoria => {
+                if (Array.isArray(categoria)) {
+                    categoria.forEach(prod => {
+                        if (prod.imagen) listaUrls.push(prod.imagen);
+                        if (prod.img) listaUrls.push(prod.img);
+                    });
+                }
+            });
+        }
+
+        // Eliminar duplicados
+        const urlsUnicas = [...new Set(listaUrls)];
+
+        // Renderizado inicial en DOM
         aplicarPortada();
         renderMenu();
+
+        // 🚀 Iniciar la precarga visual de imágenes (avanza la barra y oculta el loader al finalizar)
+        if (typeof precargarImagenesMenu === 'function') {
+            await precargarImagenesMenu(urlsUnicas, urlLogo);
+        } else {
+            // Fallback por si la función de precarga no estuviera cargada aún
+            const loader = document.getElementById("loader");
+            if (loader) loader.classList.add("hidden");
+        }
 
         // Control de Horarios de atención
         if (typeof verificarHorario === 'function' && !verificarHorario()) {
@@ -223,6 +263,10 @@ async function inicializarApp() {
 
     } catch (error) {
         console.error("Error crítico de inicialización:", error);
+        
+        // Asegurar ocultar el loader si ocurre un error fatal
+        const loader = document.getElementById("loader");
+        if (loader) loader.classList.add("hidden");
         
         // --- MENSAJE DE ERROR LIMPIO CON EL GIF DE SUSHI ---
         document.body.innerHTML = `
