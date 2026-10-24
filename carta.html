@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menú/Pedidos | WASABI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Estilos y Fuentes -->
+  <link rel="stylesheet" href="stylewasabi.css?v=25">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Librerías Externas -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* Estilos para el banner publicitario (imagen completa) */
+    .banner-publicitario {
+      background: #ffffff;
+      margin: 15px auto;
+      padding: 15px;
+      max-width: 600px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      border: 1px solid #eaeaea;
+    }
+    .banner-publicitario img {
+      width: 100%;
+      height: auto;
+      max-height: none;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .btn-embajador {
+      display: inline-block;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .btn-embajador:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    }
+
+    /* =========================
+       ESTILOS PANTALLA DE CARGA
+    ========================= */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background-color: #07070a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+    }
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loader-logo-container {
+      width: 90px;
+      height: 90px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 18px;
+      animation: bounce 1s infinite alternate;
+    }
+    .loader-logo-animado {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .progress-container {
+      width: 220px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff4500, #ff8c00);
+      transition: width 0.15s ease-out;
+    }
+    .progress-text {
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PANTALLA DE CARGA INICIAL -->
+<div id="loader">
+  <div class="loader-logo-container">
+    <img id="loader-logo-img" 
+         src="https://wasabi.menwapp.com/imagenes/wasabi_sushi.gif" 
+         alt="Wasabi Logo" 
+         class="loader-logo-animado">
+  </div>
+  <div class="progress-container">
+    <div id="progress-bar" class="progress-bar-fill"></div>
+  </div>
+  <span id="progress-text" class="progress-text">Cargando menú... 0%</span>
+</div>
+
+<header class="seccion-portada">
+  <div id="portada" class="banner-principal"></div>
+  
+  <div class="portada-info-bar container">
+    <img id="portada-logo" class="logo-restaurante" src="" alt="Logo">
+    
+    <div class="portada-acciones">
+      <button onclick="mostrarUbicacion()" class="btn-accion-portada">
+          📍 Ubicación
+      </button>
+      
+      <a href="tel:+573182651393" class="btn-accion-portada" style="text-decoration: none;">
+          📞 Contacto
+      </a>
+
+      <button onclick="mostrarTablaHorarios()" class="btn-accion-portada">
+          🕒 Horarios
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ESPACIO PUBLICITARIO -->
+<div class="container">
+  <div class="banner-publicitario">
+    <img src="https://wasabi.menwapp.com/imagenes/wasabi.png" alt="Publicidad Wasabi">
+    <div>
+     
+    </div>
+  </div>
+</div>
+
+<div class="buscador-container">
+  <span class="buscador-icono">🔍</span>
+  <input type="text" id="input-buscador" placeholder="Busca tu roll, bebida o plato favorito..." oninput="filtrarProductos(this.value)">
+  <button id="btn-limpiar-busqueda" onclick="limpiarBusqueda()" style="display:none;">✕</button>
+</div>
+
+<div class="contenedor-flotante-menu">
+    <button onclick="toggleCategorias()" class="btn-menu-lateral">
+        ☰ Categorías
+    </button>
+</div>
+
+<div id="sidebar-categorias" class="sidebar">
+    <div class="sidebar-header">
+        <h3>Menú</h3>
+        <button onclick="toggleCategorias()" class="btn-cerrar">✕</button>
+    </div>
+    <nav id="nav-categorias" class="categorias-nav">
+    </nav>
+</div>
+
+<div id="overlay-sidebar" onclick="toggleCategorias()"></div>
+
+<main id="menu" class="container">
+</main>
+
+<button class="btn-carrito-flotante" onclick="toggleCarrito()">
+  🛒 <span id="carrito-count">0</span>
+</button>
+
+<div id="carrito-panel" class="carrito-panel">
+  <div class="carrito-header">
+    <h3>Tu Pedido</h3>
+    <button onclick="toggleCarrito()" style="background:none; border:none; font-size:1rem; cursor:pointer; color:#000;">Cerrar</button>
+  </div>
+  <div id="carrito-items" class="carrito-body"></div>
+  <div class="carrito-footer">
+    <div class="total" style="margin-bottom:15px; font-weight:700; font-size:1.2rem; display:flex; justify-content:space-between; color:#000;">
+      <span>Total:</span>
+      <span id="carrito-total">$0</span>
+    </div>
+    <button id="btn-whatsapp" class="btn-agregar-modal" onclick="enviarWhatsApp()" disabled>
+      Confirmar pedido vía WhatsApp
+    </button>
+  </div>
+</div>
+
+<div id="modal-producto" class="modal-overlay">
+  <div class="modal-box">
+    <button class="btn-cerrar-modal" onclick="cerrarModalProducto()">✕</button>
+    <img id="modal-img" class="modal-img" src="" alt="Producto">
+    <div class="modal-info">
+      <h2 id="modal-nombre">Cargando...</h2>
+      <p id="modal-desc" class="modal-descripcion" style="color:#666; margin:10px 0; font-size:0.9rem;"></p>
+      <span id="modal-precio" class="modal-precio" style="font-size:1.3rem; font-weight:700; color:var(--color-acento);"></span>
+      <div id="modal-acompanamientos-list" class="lista-acompanamientos"></div>
+      <div class="campo-observaciones" style="margin-top:15px;">
+        <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.95rem;">¿Alguna nota especial?</label>
+        <textarea id="modal-obs" placeholder="Ej: Sin cebolla, término medio..." style="width:100%; height:70px; border-radius:10px; border:1px solid #ddd; padding:10px; font-family:inherit; resize:none; font-size:0.9rem;"></textarea>
+      </div>
+      <div class="selector-cantidad-modal">
+        <label style="font-weight:600; font-size:0.95rem;">Cantidad:</label>
+        <div class="controles-cantidad">
+          <button onclick="cambiarCantidad(-1)">-</button>
+          <input type="number" id="modal-cantidad" value="1" readonly>
+          <button onclick="cambiarCantidad(1)">+</button>
+        </div>
+      </div>
+      <button class="btn-agregar-modal" onclick="agregarDesdeModal()">Agregar al Pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN WHATSAPP -->
+<div id="modal-confirmacion" class="modal-overlay">
+  <div class="modal-box" style="text-align: center;">
+    <h3 style="color: #d32f2f; margin-bottom: 15px;">⚠️ ¡AVISO IMPORTANTE!</h3>
+    <p style="font-size: 0.95rem; line-height: 1.5; color: #333;">
+      En el siguiente paso se abrirá tu <strong>WhatsApp</strong> con un código de pedido generado automáticamente.
+    </p>
+    <div style="background: #fff3e0; padding: 10px; border-radius: 8px; margin: 15px 0; border: 1px solid #ffe0b2;">
+      <p style="font-weight: 700; margin: 0; color: #e65100;">❌ NO MODIFIQUES EL TEXTO</p>
+      <p style="font-size: 0.85rem; margin: 5px 0 0;">Si borras o cambias los códigos, no podremos procesar tu orden.</p>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button onclick="cerrarModalConfirmacion()" style="flex:1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #eee; cursor:pointer;">
+        Cancelar
+      </button>
+      <button onclick="confirmarYEnviar()" style="flex:1; padding: 12px; border-radius: 10px; border: none; background: #25D366; color: white; font-weight: 700; cursor:pointer;">
+        Entendido, enviar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<footer class="footer-menwapp" style="text-align: center; padding: 20px; background: var(--color-fondo); color: var(--color-texto);">
+  <div class="logo">
+    <img src="https://capitalbga.menwapp.com/imagenes/ASCOMP.JPG" alt="ASCOMP Logo" style="height: 40px; width: auto; margin-bottom: 10px;">
+  </div>
+  
+  <div class="descripcion" style="font-size:0.85rem; opacity:0.8; margin:5px 0;">
+    Desarrollamos tu sistema de Gestor de pedidos con menú digital
+  </div>
+  
+  <div class="soporte">
+    <a class="btn-whatsapp-footer" 
+   href="https://wa.me/573152653104?text=hola,%20tengo%20un%20restaurante%20y%20quiero%20sistematizar%20mi%20negocio" 
+   target="_blank" 
+   style="display:inline-block; margin-top:10px; text-decoration:none; background:#25D366; color:white; padding:8px 15px; border-radius:20px; font-size:0.85rem; font-weight:600;">
+    📲 Información sobre el sistema
+</a>
+  </div>
+  
+  <div class="copyright" style="font-size:0.75rem; opacity:0.6; margin-top:15px;">
+    Solución hecha por <strong>ASCOMP</strong> exclusivo para el sistema POS <strong>ASCOMP</strong>
+  </div>
+</footer>
+
+<script src="local.js?v=22"></script>
+
+<script>
+  const PROYECTO_URL = "https://mmtgjmxfvuzkktktergc.supabase.co";
+  const PROYECTO_KEY = "sb_publishable_-xeWh1E1WCqs7ABAvAF0TA_hafx6fpV";
+  const supabaseCliente = supabase.createClient(PROYECTO_URL, PROYECTO_KEY);
+
+  window.addEventListener('beforeunload', function (e) {
+    if (typeof carrito !== 'undefined' && carrito.length > 0) {
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
+  });
+
+  // Función auxiliar para actualizar la barra de carga desde script.js si lo deseas
+  function actualizarProgreso(porcentaje, texto) {
+    const barra = document.getElementById("progress-bar");
+    const etiqueta = document.getElementById("progress-text");
+    if (barra) barra.style.width = porcentaje + "%";
+    if (etiqueta) etiqueta.innerText = texto + ` ${porcentaje}%`;
+  }
+
+  function ocultarLoader() {
+    const loader = document.getElementById("loader");
+    if (loader) {
+      loader.classList.add("hidden");
+      setTimeout(() => loader.remove(), 400); // Lo elimina del DOM tras la animación
+    }
+  }
+</script>
+
+</body>
+</html>
