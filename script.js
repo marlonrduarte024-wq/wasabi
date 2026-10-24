@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 // ============================================================
 // ESTADO GLOBAL
 // ============================================================
@@ -58,7 +53,7 @@ async function cargarArchivo(nombreArchivo) {
 // ============================================================
 // PRECARGA DE IMÁGENES
 // ============================================================
-async function precargarImagenesMenu(urlsImagenes, logoUrl) {
+async function precargarImagenesMenu(urlsImagenes = [], logoUrl = '') {
     const loader = document.getElementById("loader");
     const progressBar = document.getElementById("progress-bar");
     const progressText = document.getElementById("progress-text");
@@ -69,21 +64,24 @@ async function precargarImagenesMenu(urlsImagenes, logoUrl) {
         loaderLogoImg.src = logoUrl;
     }
 
-    // Filtrar URLs válidas excluyendo valores nulos o vacíos
+    // Aceptar tanto URLs absolutas (http/https) como rutas relativas (/imagenes/...)
     const urls = urlsImagenes.filter(url => 
-        url && typeof url === 'string' && url.trim().startsWith('http')
+        url && typeof url === 'string' && url.trim().length > 0
     );
 
     const total = urls.length;
+    
+    // Si no hay imágenes válidas, ocultar inmediatamente
     if (total === 0) {
         if (loader) loader.classList.add("hidden");
         return;
     }
 
+    let cargados = 0;
     let porcentajeReal = 0;
     let porcentajeVisual = 0;
 
-    // Animación suave para evitar que el porcentaje salte bruscamente
+    // Animación fluida de la barra de progreso
     const intervaloSuave = setInterval(() => {
         if (porcentajeVisual < porcentajeReal) {
             porcentajeVisual++;
@@ -93,40 +91,62 @@ async function precargarImagenesMenu(urlsImagenes, logoUrl) {
         if (porcentajeVisual >= 100) {
             clearInterval(intervaloSuave);
         }
-    }, 15);
+    }, 12);
 
-    let cargados = 0;
-    
-    // Procesar imágenes en lotes pequeños
+    // Cargar imagen con TIMEOUT individual (evita que una imagen colgada bloquee todo)
+    function cargarImagenConTimeout(url, timeoutMs = 2500) {
+        return new Promise((resolve) => {
+            let resuelto = false;
+            const img = new Image();
+
+            const finalizar = () => {
+                if (!resuelto) {
+                    resuelto = true;
+                    resolve();
+                }
+            };
+
+            img.onload = img.onerror = finalizar;
+            img.src = url;
+
+            // Cortar si la imagen tarda demasiado en responder
+            setTimeout(finalizar, timeoutMs);
+        });
+    }
+
+    // Procesar imágenes en cola
     const LIMITE = 8;
     const cola = [...urls];
 
     async function worker() {
         while (cola.length > 0) {
             const url = cola.shift();
-            await new Promise((resolve) => {
-                const img = new Image();
-                img.onload = img.onerror = resolve;
-                img.src = url;
-            });
+            await cargarImagenConTimeout(url);
             cargados++;
             porcentajeReal = Math.floor((cargados / total) * 100);
         }
     }
 
-    const trabajadores = Array.from({ length: Math.min(LIMITE, total) }, () => worker());
-    await Promise.all(trabajadores);
+    // Timeout de SEGURIDAD GLOBAL: máximo 6 segundos para no congelar la app nunca
+    const timeoutGlobal = new Promise(resolve => setTimeout(resolve, 6000));
+    const descargas = Promise.all(Array.from({ length: Math.min(LIMITE, total) }, () => worker()));
 
-    // Forzar que el porcentaje visual alcance el 100% antes de ocultar
+    // Correr descargas o liberar por timeout global
+    await Promise.race([descargas, timeoutGlobal]);
+
+    // Forzar 100% y ocultar loader
     porcentajeReal = 100;
-    await new Promise(res => setTimeout(res, 300));
+    porcentajeVisual = 100;
+    if (progressBar) progressBar.style.width = `100%`;
+    if (progressText) progressText.textContent = `¡Listo! 100%`;
 
-    // Ocultar pantalla de carga
+    await new Promise(res => setTimeout(res, 250));
+    clearInterval(intervaloSuave);
+
     if (loader) {
         loader.classList.add("hidden");
     }
 }
-
 // ============================================================
 // INICIALIZACIÓN DE LA APP
 // ============================================================
@@ -1409,7 +1429,6 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
-
 
 
 
