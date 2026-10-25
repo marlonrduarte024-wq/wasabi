@@ -575,7 +575,7 @@ function actualizarVistaCarrito() {
                 
                 <!-- 📱 OBLIGATORIO SIEMPRE: Número de Teléfono -->
                 <div id="contenedor-telefono-web" style="display:none; margin-top:15px; border-top:1px solid #333; padding-top:15px;">
-                    <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Número de Celular (WhatsApp):</label>
+                    <label style="color:#aaa; font-size:0.75rem; display:block; margin-bottom:4px;">Número de Celular (WhatsApp desde el que escribes):</label>
                     <input type="tel" id="web-telefono" placeholder="Ej. 3152653104" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');" style="width:100%; padding:8px; border-radius:6px; border:1px solid #444; background:#222; color:#fff; box-sizing:border-box; font-size:0.85rem;">
                 </div>
 
@@ -1473,6 +1473,11 @@ window.onpopstate = function() {
 };
 
 document.addEventListener("DOMContentLoaded", inicializarApp);
+
+
+
+
+
 
 
 
