@@ -74,6 +74,10 @@
                 <div class="col"><div class="stat-card border-warning" style="cursor: default; background: #232015;"><span class="stat-val text-warning" id="count-domicilios">0 u</span><span class="stat-label">🛵 Domicilios</span></div></div>
                 <div class="col"><div class="stat-card border-purple" style="cursor: default; background: #1a1523; border-color: #a855f7 !important;"><span class="stat-val" id="count-recoger" style="color: #a855f7;">0 u</span><span class="stat-label">🏬 Recoger</span></div></div>
             </div>
+            <!-- Nueva fila para mostrar el Total de Domicilios acumulados -->
+            <div class="row g-2 mb-2">
+                <div class="col-12"><div class="stat-card border-warning" style="cursor: default; background: #232015; padding: 12px;"><span class="stat-val text-warning" id="total-domicilios" style="font-size: 1.5rem;">$0</span><span class="stat-label" style="font-size: 0.75rem;">🛵 Total Dinero Domicilios (Carreras)</span></div></div>
+            </div>
             <div class="row g-2 mb-2 row-cols-2">
                 <div class="col"><div class="stat-card border-info" style="cursor: default; background: #141f27;"><span class="stat-val text-info" id="total-transferencia">$0</span><span class="stat-label">💵 Total Transferencia</span></div></div>
                 <div class="col"><div class="stat-card border-light" style="cursor: default; background: #222;"><span class="stat-val text-light" id="total-efectivo">$0</span><span class="stat-label">💰 Total Efectivo</span></div></div>
@@ -180,8 +184,23 @@ function actualizarContadores() {
     document.getElementById('count-camino').innerText = pedidosCache.filter(p => p.estado === 'DESPACHADO').length;
     document.getElementById('count-entregados').innerText = pedidosCache.filter(p => p.estado === 'ENTREGADO').length;
     document.getElementById('count-cancelados').innerText = pedidosCache.filter(p => p.estado === 'CANCELADO').length;
+    
     const totalDinero = validos.reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
     document.getElementById('total-dinero').innerText = `$${totalDinero.toLocaleString()}`;
+
+    // Calcular el acumulado total de domicilios (carreras)
+    let totalDomiAcumulado = 0;
+    validos.forEach(p => {
+        const esRecoger = (p.barrio || '').trim().toUpperCase() === 'LOCAL';
+        if (!esRecoger) {
+            const sumaItems = calcularSumaItems(p.detalle_pedido);
+            const totalPedido = parseFloat(p.total || 0);
+            const domi = Math.max(0, totalPedido - sumaItems);
+            totalDomiAcumulado += domi;
+        }
+    });
+    document.getElementById('total-domicilios').innerText = `$${totalDomiAcumulado.toLocaleString()}`;
+
     const transf = validos.filter(p => (p.metodo_pago || '').toLowerCase().includes('transferencia')).reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
     const efec = validos.filter(p => !(p.metodo_pago || '').toLowerCase().includes('transferencia')).reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
     document.getElementById('total-transferencia').innerText = `$${transf.toLocaleString()}`;
