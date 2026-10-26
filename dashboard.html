@@ -107,7 +107,7 @@
 <script>
     const CLAVE_SECRETA = "SUSHI2026";
     const API_BASE = "https://nube.menwapp.com/api/wasabi";
-    const FECHA_CORTE = "2026-11-23";
+    const FECHA_CORTE = "2026-11-26";
     let pedidosCache = [];
     let filtroActual = "TODOS";
     let busquedaNombreActual = ""; 
@@ -117,17 +117,15 @@ function validarClave() {
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
         
-        // Ejecutar funciones de carga y verificación aquí
         cargarDatos();
-        verificarSuscripcion(); // Se verifica solo cuando el usuario entra
+        verificarSuscripcion();
         setInterval(cargarDatos, 10000);
     } else { 
         alert("Clave incorrecta"); 
     }
 }
-// Nueva función más precisa
+
 function obtenerFechaLocal() {
-    // Obtiene la fecha en zona horaria de Bogotá
     const d = new Date(new Date().toLocaleString("en-US", {timeZone: "America/Bogota"}));
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -135,11 +133,28 @@ function obtenerFechaLocal() {
     return `${yyyy}-${mm}-${dd}`;
 }
 
+function calcularSumaItems(detalle) {
+    if (!detalle) return 0;
+    let suma = 0;
+    detalle.split('\n').forEach(linea => {
+        const matchPrecio = linea.match(/\$\s*([\d\.,]+)/);
+        if (matchPrecio) {
+            const valorStr = matchPrecio[1].replace(/\./g, '').replace(/,/g, '');
+            const valor = parseFloat(valorStr);
+            if (!isNaN(valor)) {
+                const upper = linea.toUpperCase();
+                if (!upper.includes("TOTAL") && !upper.includes("RESUMEN") && !upper.includes("DOMICILIO")) {
+                    suma += valor;
+                }
+            }
+        }
+    });
+    return suma;
+}
+
 function verificarSuscripcion() {
     const hoy = obtenerFechaLocal();
-    console.log("Fecha actual:", hoy); // Útil para depurar en la consola del navegador (F12)
-
-    // Compara si la fecha actual es igual o mayor a la de corte
+    console.log("Fecha actual:", hoy);
     if (hoy >= FECHA_CORTE) {
         const modalEl = document.getElementById('modalSuscripcion');
         const modal = new bootstrap.Modal(modalEl);
@@ -147,133 +162,132 @@ function verificarSuscripcion() {
     }
 }
 
+async function cargarDatos(fechaTarget = null) {
+    const fecha = fechaTarget || document.getElementById('input-fecha').value;
+    try {
+        const response = await fetch(`${API_BASE}/obtener_pedidos?fecha=${fecha}`);
+        pedidosCache = await response.json() || [];
+        actualizarContadores();
+        dibujarPedidos();
+    } catch (e) { console.error("Error API:", e); }
+}
 
+function actualizarContadores() {
+    if (!Array.isArray(pedidosCache)) return;
+    const validos = pedidosCache.filter(p => p.estado !== 'CANCELADO');
+    document.getElementById('count-total').innerText = pedidosCache.length;
+    document.getElementById('count-pendientes').innerText = pedidosCache.filter(p => p.estado === 'RECIBIDO').length;
+    document.getElementById('count-camino').innerText = pedidosCache.filter(p => p.estado === 'DESPACHADO').length;
+    document.getElementById('count-entregados').innerText = pedidosCache.filter(p => p.estado === 'ENTREGADO').length;
+    document.getElementById('count-cancelados').innerText = pedidosCache.filter(p => p.estado === 'CANCELADO').length;
+    const totalDinero = validos.reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
+    document.getElementById('total-dinero').innerText = `$${totalDinero.toLocaleString()}`;
+    const transf = validos.filter(p => (p.metodo_pago || '').toLowerCase().includes('transferencia')).reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
+    const efec = validos.filter(p => !(p.metodo_pago || '').toLowerCase().includes('transferencia')).reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
+    document.getElementById('total-transferencia').innerText = `$${transf.toLocaleString()}`;
+    document.getElementById('total-efectivo').innerText = `$${efec.toLocaleString()}`;
+    document.getElementById('count-domicilios').innerText = `${validos.length - validos.filter(p => (p.barrio || '').trim().toUpperCase() === 'LOCAL').length} u`;
+    document.getElementById('count-recoger').innerText = `${validos.filter(p => (p.barrio || '').trim().toUpperCase() === 'LOCAL').length} u`;
+}
 
-
-
-
-    async function cargarDatos(fechaTarget = null) {
-        const fecha = fechaTarget || document.getElementById('input-fecha').value;
-        try {
-            const response = await fetch(`${API_BASE}/obtener_pedidos?fecha=${fecha}`);
-            pedidosCache = await response.json() || [];
-            actualizarContadores();
-            dibujarPedidos();
-        } catch (e) { console.error("Error API:", e); }
-    }
-
-    function actualizarContadores() {
-        if (!Array.isArray(pedidosCache)) return;
-        const validos = pedidosCache.filter(p => p.estado !== 'CANCELADO');
-        document.getElementById('count-total').innerText = pedidosCache.length;
-        document.getElementById('count-pendientes').innerText = pedidosCache.filter(p => p.estado === 'RECIBIDO').length;
-        document.getElementById('count-camino').innerText = pedidosCache.filter(p => p.estado === 'DESPACHADO').length;
-        document.getElementById('count-entregados').innerText = pedidosCache.filter(p => p.estado === 'ENTREGADO').length;
-        document.getElementById('count-cancelados').innerText = pedidosCache.filter(p => p.estado === 'CANCELADO').length;
-        const totalDinero = validos.reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
-        document.getElementById('total-dinero').innerText = `$${totalDinero.toLocaleString()}`;
-        const transf = validos.filter(p => (p.metodo_pago || '').toLowerCase().includes('transferencia')).reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
-        const efec = validos.filter(p => !(p.metodo_pago || '').toLowerCase().includes('transferencia')).reduce((acc, p) => acc + parseFloat(p.total || 0), 0);
-        document.getElementById('total-transferencia').innerText = `$${transf.toLocaleString()}`;
-        document.getElementById('total-efectivo').innerText = `$${efec.toLocaleString()}`;
-        document.getElementById('count-domicilios').innerText = `${validos.length - validos.filter(p => (p.barrio || '').trim().toUpperCase() === 'LOCAL').length} u`;
-        document.getElementById('count-recoger').innerText = `${validos.filter(p => (p.barrio || '').trim().toUpperCase() === 'LOCAL').length} u`;
-    }
-
-    function calcularProductosVendidos() {
-        const conteoProductos = {};
-        pedidosCache.filter(p => p.estado !== 'CANCELADO').forEach(pedido => {
-            (pedido.detalle_pedido || "").split('\n').forEach(linea => {
-                const matchFormato = linea.match(/•\s*(\d+)\s*x\s*([^$]+)/i);
-                if (matchFormato) {
-                    const cantidad = parseInt(matchFormato[1]);
-                    const producto = matchFormato[2].trim().toUpperCase();
-                    if (cantidad > 0 && producto && !producto.includes("TOTAL") && !producto.includes("RESUMEN")) {
-                        conteoProductos[producto] = (conteoProductos[producto] || 0) + cantidad;
-                    }
+function calcularProductosVendidos() {
+    const conteoProductos = {};
+    pedidosCache.filter(p => p.estado !== 'CANCELADO').forEach(pedido => {
+        (pedido.detalle_pedido || "").split('\n').forEach(linea => {
+            const matchFormato = linea.match(/•\s*(\d+)\s*x\s*([^$]+)/i);
+            if (matchFormato) {
+                const cantidad = parseInt(matchFormato[1]);
+                const producto = matchFormato[2].trim().toUpperCase();
+                if (cantidad > 0 && producto && !producto.includes("TOTAL") && !producto.includes("RESUMEN")) {
+                    conteoProductos[producto] = (conteoProductos[producto] || 0) + cantidad;
                 }
-            });
+            }
         });
-        const listaOrdenada = Object.keys(conteoProductos).map(nombre => ({ nombre, cantidad: conteoProductos[nombre] })).sort((a, b) => b.cantidad - a.cantidad);
-        const tablaCuerpo = document.getElementById('tabla-productos-cuerpo');
-        tablaCuerpo.innerHTML = listaOrdenada.length === 0 ? `<tr><td colspan="3" class="text-center text-muted py-3">No hay productos registrados.</td></tr>` : listaOrdenada.map((item, index) => `<tr><td class="text-center text-secondary">${index + 1}</td><td class="text-white">${item.nombre}</td><td class="text-end text-success fw-bold">${item.cantidad} u</td></tr>`).join('');
-        new bootstrap.Modal(document.getElementById('modalProductosVendidos')).show();
-    }
+    });
+    const listaOrdenada = Object.keys(conteoProductos).map(nombre => ({ nombre, cantidad: conteoProductos[nombre] })).sort((a, b) => b.cantidad - a.cantidad);
+    const tablaCuerpo = document.getElementById('tabla-productos-cuerpo');
+    tablaCuerpo.innerHTML = listaOrdenada.length === 0 ? `<tr><td colspan="3" class="text-center text-muted py-3">No hay productos registrados.</td></tr>` : listaOrdenada.map((item, index) => `<tr><td class="text-center text-secondary">${index + 1}</td><td class="text-white">${item.nombre}</td><td class="text-end text-success fw-bold">${item.cantidad} u</td></tr>`).join('');
+    new bootstrap.Modal(document.getElementById('modalProductosVendidos')).show();
+}
 
-    function dibujarPedidos() {
-        const contenedor = document.getElementById('contenedor-pedidos');
-        contenedor.innerHTML = '';
-        let filtrados = filtroActual === "TODOS" ? pedidosCache : pedidosCache.filter(p => p.estado === filtroActual);
-        if (busquedaNombreActual !== "") filtrados = filtrados.filter(p => (p.cliente || '').toLowerCase().includes(busquedaNombreActual));
+function dibujarPedidos() {
+    const contenedor = document.getElementById('contenedor-pedidos');
+    contenedor.innerHTML = '';
+    let filtrados = filtroActual === "TODOS" ? pedidosCache : pedidosCache.filter(p => p.estado === filtroActual);
+    if (busquedaNombreActual !== "") filtrados = filtrados.filter(p => (p.cliente || '').toLowerCase().includes(busquedaNombreActual));
 
-        filtrados.forEach(p => {
-            const esTransferencia = (p.metodo_pago || '').toLowerCase().includes('transferencia');
-            const esRecoger = (p.barrio || '').trim().toUpperCase() === 'LOCAL';
-            const badgeEntrega = esRecoger ? `<span class="badge text-white border border-purple" style="background-color: #a855f7;">🏬 RECOGE LOCAL</span>` : `<span class="badge bg-dark text-white border border-warning">🛵 DOMICILIO</span>`;
-            
-            const div = document.createElement('div');
-            div.className = "col-12 col-xxl-6 mb-3";
-            div.innerHTML = `
-                <div class="card pedido-card shadow estado-${p.estado}">
-                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
-                        <div style="flex: 1; min-width: 200px;">
-                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                                <span class="badge bg-dark border border-secondary text-info">#${p.id_pedido_local || '??'}</span>
-                                <span class="badge bg-secondary" style="font-size:0.7rem">${p.estado || 'RECIBIDO'}</span>
-                                ${badgeEntrega}
-                            </div>
-                            <div class="cliente-info">${(p.cliente || 'CLIENTE SIN NOMBRE').toUpperCase()}</div>
-                            <div class="timeline-container">
-                                <div class="time-box"><span class="time-label">RECIBIDO:</span> <b>${formatearH(p.hora_ingreso)}</b></div>
-                                <div class="time-box text-primary"><span class="time-label text-primary">DESPACHO:</span> <b>${formatearH(p.hora_despacho)}</b></div>
-                                <div class="time-box text-success"><span class="time-label text-success">ENTREGA:</span> <b>${formatearH(p.hora_entrega)}</b></div>
-                            </div>
+    filtrados.forEach(p => {
+        const esTransferencia = (p.metodo_pago || '').toLowerCase().includes('transferencia');
+        const esRecoger = (p.barrio || '').trim().toUpperCase() === 'LOCAL';
+        const badgeEntrega = esRecoger ? `<span class="badge text-white border border-purple" style="background-color: #a855f7;">🏬 RECOGE LOCAL</span>` : `<span class="badge bg-dark text-white border border-warning">🛵 DOMICILIO</span>`;
+        
+        // Cálculo del valor individual del domicilio
+        const sumaItems = calcularSumaItems(p.detalle_pedido);
+        const totalPedido = parseFloat(p.total || 0);
+        const valorDomicilio = esRecoger ? 0 : Math.max(0, totalPedido - sumaItems);
+
+        const div = document.createElement('div');
+        div.className = "col-12 col-xxl-6 mb-3";
+        div.innerHTML = `
+            <div class="card pedido-card shadow estado-${p.estado}">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <div style="flex: 1; min-width: 200px;">
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                            <span class="badge bg-dark border border-secondary text-info">#${p.id_pedido_local || '??'}</span>
+                            <span class="badge bg-secondary" style="font-size:0.7rem">${p.estado || 'RECIBIDO'}</span>
+                            ${badgeEntrega}
                         </div>
-                        <div class="text-md-end text-start p-2 rounded" style="background: rgba(255,255,255,0.03); min-width: 130px; border: 1px solid #2a2a2a;">
-                            <h3 class="text-success fw-bold mb-0" style="font-size: 1.6rem; word-break: break-all;">$${parseFloat(p.total || 0).toLocaleString()}</h3>
-                            <span class="badge badge-pago px-2 py-1 mt-1" style="font-size: 0.75rem;">${(p.metodo_pago || 'EFECTIVO').toUpperCase()}</span>
+                        <div class="cliente-info">${(p.cliente || 'CLIENTE SIN NOMBRE').toUpperCase()}</div>
+                        <div class="timeline-container">
+                            <div class="time-box"><span class="time-label">RECIBIDO:</span> <b>${formatearH(p.hora_ingreso)}</b></div>
+                            <div class="time-box text-primary"><span class="time-label text-primary">DESPACHO:</span> <b>${formatearH(p.hora_despacho)}</b></div>
+                            <div class="time-box text-success"><span class="time-label text-success">ENTREGA:</span> <b>${formatearH(p.hora_entrega)}</b></div>
                         </div>
                     </div>
-                    <div class="row mt-2">
-                        <div class="col-md-7">
-                            <p class="mb-2 info-local"><strong class="text-warning">📍 Dirección:</strong> ${p.direccion || 'No especificada'}</p>
-                            <p class="mb-2 info-local"><strong class="text-info">🏘️ Barrio:</strong> <span class="badge bg-dark text-white border border-info" style="font-size: 0.9rem;">${(p.barrio || 'SIN ESPECIFICAR').toUpperCase()}</span></p>
-                            <div class="detalle-box"><div class="detalle-texto">${p.detalle_pedido || 'Sin detalles'}</div></div>
-                        </div>
-                        <div class="col-md-5 text-end d-flex flex-column justify-content-end gap-2 mt-3 mt-md-0">
-                            ${esTransferencia ? `<button onclick="verComprobante(${p.id_pedido_local})" class="btn ${p.validado ? 'btn-outline-success' : 'btn-outline-danger animate-pulse'} btn-sm fw-bold py-2 w-100">${p.validado ? '✅ PAGO VALIDADO (VER)' : '⚠️ SIN VALIDAR (REVISAR)'}</button>` : ''}
-                            <a href="${p.whatsapp_url || '#'}" target="_blank" class="btn btn-success btn-sm w-100 fw-bold py-2">📱 WHATSAPP</a>
-                        </div>
+                    <div class="text-md-end text-start p-2 rounded" style="background: rgba(255,255,255,0.03); min-width: 130px; border: 1px solid #2a2a2a;">
+                        <h3 class="text-success fw-bold mb-0" style="font-size: 1.6rem; word-break: break-all;">$${totalPedido.toLocaleString()}</h3>
+                        <span class="badge badge-pago px-2 py-1 mt-1" style="font-size: 0.75rem;">${(p.metodo_pago || 'EFECTIVO').toUpperCase()}</span>
+                        
+                        <!-- Muestra el valor del domicilio individual -->
+                        ${!esRecoger && valorDomicilio > 0 ? `<div class="text-warning mt-1" style="font-size: 0.75rem; font-weight: 600;">🛵 Domi: $${valorDomicilio.toLocaleString()}</div>` : ''}
                     </div>
-                </div>`;
-            contenedor.appendChild(div);
-        });
-    }
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-7">
+                        <p class="mb-2 info-local"><strong class="text-warning">📍 Dirección:</strong> ${p.direccion || 'No especificada'}</p>
+                        <p class="mb-2 info-local"><strong class="text-info">🏘️ Barrio:</strong> <span class="badge bg-dark text-white border border-info" style="font-size: 0.9rem;">${(p.barrio || 'SIN ESPECIFICAR').toUpperCase()}</span></p>
+                        <div class="detalle-box"><div class="detalle-texto">${p.detalle_pedido || 'Sin detalles'}</div></div>
+                    </div>
+                    <div class="col-md-5 text-end d-flex flex-column justify-content-end gap-2 mt-3 mt-md-0">
+                        ${esTransferencia ? `<button onclick="verComprobante(${p.id_pedido_local})" class="btn ${p.validado ? 'btn-outline-success' : 'btn-outline-danger animate-pulse'} btn-sm fw-bold py-2 w-100">${p.validado ? '✅ PAGO VALIDADO (VER)' : '⚠️ SIN VALIDAR (REVISAR)'}</button>` : ''}
+                        <a href="${p.whatsapp_url || '#'}" target="_blank" class="btn btn-success btn-sm w-100 fw-bold py-2">📱 WHATSAPP</a>
+                    </div>
+                </div>
+            </div>`;
+        contenedor.appendChild(div);
+    });
+}
 
-    function formatearH(h) {
-        if (!h || h === "None" || h === "null") return "--:--";
-        if (h.length > 5) {
-            const date = new Date(h);
-            return !isNaN(date) ? date.toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit', hour12: false}) : "--:--";
-        }
-        return h;
+function formatearH(h) {
+    if (!h || h === "None" || h === "null") return "--:--";
+    if (h.length > 5) {
+        const date = new Date(h);
+        return !isNaN(date) ? date.toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit', hour12: false}) : "--:--";
     }
+    return h;
+}
 
-    function verComprobante(id) { 
-        document.getElementById('img-comprobante').src = `https://nube.menwapp.com/wasabi/imagenes/pedido_${id}.jpg`;
-        new bootstrap.Modal(document.getElementById('modalComprobante')).show(); 
-    }
-    function consultarFechaManual() { cargarDatos(document.getElementById('input-fecha').value); }
-    function volverHoy() { cargarDatos(); }
-    function filtrarPorNombre() { busquedaNombreActual = document.getElementById('input-buscar-cliente').value.toLowerCase(); dibujarPedidos(); }
-    function aplicarFiltro(f) { filtroActual = f; dibujarPedidos(); }
+function verComprobante(id) { 
+    document.getElementById('img-comprobante').src = `https://nube.menwapp.com/wasabi/imagenes/pedido_${id}.jpg`;
+    new bootstrap.Modal(document.getElementById('modalComprobante')).show(); 
+}
+function consultarFechaManual() { cargarDatos(document.getElementById('input-fecha').value); }
+function volverHoy() { cargarDatos(); }
+function filtrarPorNombre() { busquedaNombreActual = document.getElementById('input-buscar-cliente').value.toLowerCase(); dibujarPedidos(); }
+function aplicarFiltro(f) { filtroActual = f; dibujarPedidos(); }
 
 window.onload = () => {
-    // Usa la función unificada para poner la fecha en el input
     document.getElementById('input-fecha').value = obtenerFechaLocal();
-    
-    // Verifica la suscripción
-  //  verificarSuscripcion();
 };
 </script>
 
